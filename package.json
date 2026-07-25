@@ -21,10 +21,16 @@
   "bugs": {
     "url": "https://github.com/chermod/ncalc/issues"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
+    "test": "vitest --run",
+    "check:types": "tsc -b --noEmit",
     "check:package": "publint",
-    "check:formatting": "prettier --check ."
+    "check:formatting": "prettier --check .",
+    "prepublishOnly": "npm run build"
   },
   "sideEffects": false,
   "engines": {
