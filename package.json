@@ -21,6 +21,10 @@
   "bugs": {
     "url": "https://github.com/chermod/ncalc/issues"
   },
+  "scripts": {
+    "check:package": "publint",
+    "check:formatting": "prettier --check ."
+  },
   "sideEffects": false,
   "engines": {
     "node": ">=24"
