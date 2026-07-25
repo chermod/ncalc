@@ -35,6 +35,5 @@
   "devDependencies": {
     "prettier": "^3.8.4",
     "publint": "^0.3.21"
-  },
-  "main": "thisdoesnotexist"
+  }
 }
