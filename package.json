@@ -1,0 +1,39 @@
+{
+  "name": "@chermod/ncalc",
+  "type": "module",
+  "version": "0.0.1-alpha",
+  "description": "NCalc expression evaluator",
+  "keywords": [
+    "ncalc",
+    "evaluator",
+    "expression",
+    "formula",
+    "parser",
+    "math",
+    "calculator"
+  ],
+  "author": "Chermod",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chermod/ncalc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chermod/ncalc/issues"
+  },
+  "scripts": {
+    "check:package": "publint",
+    "check:formatting": "prettier --check ."
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.4",
+    "publint": "^0.3.21"
+  }
+}
