@@ -1,0 +1,582 @@
+import { SourceRegion } from "./source-region";
+import {
+  LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
+  LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+  LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
+  LEXER_ERROR_MESSAGE_UNRECOGNIZED_OPERATOR,
+  lexerErrorMessageExpectedParameterClose,
+  lexerErrorMessageInvalidNumber,
+  lexerErrorMessageUnrecognizedInput,
+} from "./lexer-messages";
+import { LexerError } from "./lexer-error";
+
+export type TokenType =
+  | "group-open"
+  | "group-close"
+  | "separator"
+  | "colon"
+  | "parameter"
+  | "boolean"
+  | "string"
+  | "number"
+  | "date"
+  | "identifier"
+  | "logical-and"
+  | "more-than"
+  | "less-than"
+  | "less-than-or-equal"
+  | "more-than-or-equal"
+  | "not-equal"
+  | "logical-not"
+  | "equals"
+  | "minus"
+  | "bit-or"
+  | "exp"
+  | "bit-xor"
+  | "bit-and"
+  | "shift-right"
+  | "shift-left"
+  | "plus"
+  | "times"
+  | "ternary"
+  | "logical-or"
+  | "division"
+  | "modulus"
+  | "complement"
+  | "in"
+  | "not"
+  | "like";
+
+export type Token = {
+  type: TokenType;
+  value: string;
+  location: SourceRegion;
+};
+
+type TokenWithoutLocation = Omit<Token, "location">;
+
+export class Lexer {
+  readonly #input: string;
+  #index: number = 0;
+  #line: number = 1;
+  #column: number = 1;
+  #nextToken: null | Token = null;
+  #currentToken: null | Token = null;
+
+  constructor(input: string) {
+    this.#input = input;
+  }
+
+  peek(): Token | null {
+    if (this.#nextToken !== null) return this.#nextToken;
+
+    return (this.#nextToken = this.#getNext());
+  }
+
+  next(): Token | null {
+    this.#currentToken = this.peek();
+    this.#nextToken = null;
+    return this.#currentToken;
+  }
+
+  #getNext(): Token | null {
+    this.#skipWhitespace();
+    const tokenStart = {
+      index: this.#index,
+      line: this.#line,
+      column: this.#column,
+    };
+    const nextCharacter = this.#peekChar();
+
+    if (nextCharacter === null) return null;
+
+    if (isNumberStart(nextCharacter)) {
+      return this.#region(this.#number(), tokenStart);
+    } else if (isStringStart(nextCharacter)) {
+      return this.#region(this.#string(), tokenStart);
+    } else if (isDateStart(nextCharacter)) {
+      return this.#region(this.#date(), tokenStart);
+    } else if (isSimpleToken(nextCharacter)) {
+      return this.#region(this.#operator(), tokenStart);
+    } else if (isParameter(nextCharacter)) {
+      return this.#region(this.#parameter(), tokenStart);
+    } else if (isIdentifierStart(nextCharacter)) {
+      return this.#region(this.#identifier(), tokenStart);
+    } else {
+      throw new LexerError(
+        "lexer.unrecognized-input",
+        lexerErrorMessageUnrecognizedInput(nextCharacter),
+        new SourceRegion({
+          source: this.#input,
+          offset: tokenStart.index,
+          extent: 1,
+          line: tokenStart.line,
+          column: tokenStart.column,
+          endLine: tokenStart.line,
+          endColumn: tokenStart.column + 1,
+        }),
+      );
+    }
+  }
+
+  #date(): TokenWithoutLocation {
+    let completeLiteral = "";
+    this.#nextChar();
+    for (;;) {
+      const nextCharacter = this.#peekChar();
+      if (nextCharacter === null) {
+        throw new LexerError(
+          "lexer.expected-end-of-date",
+          LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
+          this.#currentLocation(),
+        );
+      }
+      if (nextCharacter === "#") break;
+      completeLiteral += nextCharacter;
+      this.#nextChar();
+    }
+
+    this.#nextChar();
+
+    return {
+      type: "date",
+      value: completeLiteral,
+    };
+  }
+
+  #string(): TokenWithoutLocation {
+    const stringStartChar = this.#nextChar();
+
+    let contents = "";
+
+    let withinEscape = false;
+
+    for (;;) {
+      const nextCharacter = this.#peekChar();
+      if (nextCharacter === null) {
+        if (withinEscape) {
+          throw new LexerError(
+            "lexer.expected-end-of-escaped-character",
+            LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+            this.#currentLocation(),
+          );
+        }
+
+        throw new LexerError(
+          "lexer.expected-end-of-string",
+          LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
+          this.#currentLocation(),
+        );
+      }
+      if (nextCharacter === stringStartChar && !withinEscape) break;
+      if (
+        withinEscape &&
+        nextCharacter !== stringStartChar &&
+        !["\\", "t", "r", "n", "u"].includes(nextCharacter)
+      ) {
+        throw new LexerError(
+          "lexer.expected-end-of-escaped-character",
+          LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+          this.#currentLocation(),
+        );
+      }
+
+      if (withinEscape && nextCharacter === "n") {
+        contents += "\n";
+        withinEscape = false;
+        this.#nextChar();
+      } else if (withinEscape && nextCharacter === "t") {
+        contents += "\t";
+        withinEscape = false;
+        this.#nextChar();
+      } else if (withinEscape && nextCharacter === "r") {
+        contents += "\r";
+        withinEscape = false;
+        this.#nextChar();
+      } else if (withinEscape && nextCharacter === "u") {
+        this.#nextChar();
+        contents += this.#unicodeEscape();
+        withinEscape = false;
+      } else if (!withinEscape && nextCharacter === "\\") {
+        withinEscape = true;
+        this.#nextChar();
+      } else {
+        contents += nextCharacter;
+        withinEscape = false;
+        this.#nextChar();
+      }
+    }
+
+    this.#nextChar();
+
+    return { type: "string", value: contents };
+  }
+
+  #number(): TokenWithoutLocation {
+    const completeLiteralStart = this.#index;
+    let completeLiteralLength = 0;
+    let hasLeadingDigit = false;
+    for (;;) {
+      const nextCharacter = this.#peekChar();
+      if (nextCharacter === null || !isNumber(nextCharacter)) break;
+      hasLeadingDigit = true;
+      completeLiteralLength++;
+      this.#nextChar();
+    }
+
+    let hasFractionDigit = false;
+    if (this.#peekChar() === ".") {
+      this.#nextChar();
+      completeLiteralLength++;
+    }
+
+    for (;;) {
+      const nextCharacter = this.#peekChar();
+      if (nextCharacter === null || !isNumber(nextCharacter)) break;
+      hasFractionDigit = true;
+      completeLiteralLength++;
+      this.#nextChar();
+    }
+
+    if (!hasLeadingDigit && !hasFractionDigit) {
+      throw new LexerError(
+        "lexer.invalid-number",
+        lexerErrorMessageInvalidNumber(
+          this.#input.slice(
+            completeLiteralStart,
+            completeLiteralStart + completeLiteralLength,
+          ),
+        ),
+        this.#currentLocation(),
+      );
+    }
+
+    const exponent: string | null = this.#peekChar();
+    if (exponent === "e" || exponent === "E") {
+      this.#nextChar();
+      completeLiteralLength++;
+
+      if (this.#peekChar() === "-") {
+        this.#nextChar();
+        completeLiteralLength++;
+      } else if (this.#peekChar() === "+") {
+        this.#nextChar();
+        completeLiteralLength++;
+      }
+
+      let hasExponentDigit = false;
+      for (;;) {
+        const nextCharacter = this.#peekChar();
+        if (nextCharacter === null || !isNumber(nextCharacter)) break;
+        hasExponentDigit = true;
+        completeLiteralLength++;
+        this.#nextChar();
+      }
+
+      if (!hasExponentDigit) {
+        throw new LexerError(
+          "lexer.invalid-number",
+          lexerErrorMessageInvalidNumber(
+            this.#input.slice(
+              completeLiteralStart,
+              completeLiteralStart + completeLiteralLength,
+            ),
+          ),
+          this.#currentLocation(),
+        );
+      }
+    }
+
+    return {
+      type: "number",
+      value: this.#input.slice(
+        completeLiteralStart,
+        completeLiteralStart + completeLiteralLength,
+      ),
+    };
+  }
+
+  #operator(): TokenWithoutLocation {
+    const operator = this.#nextChar();
+    if (operator === null) {
+      throw new LexerError(
+        "lexer.unrecognized-operator",
+        LEXER_ERROR_MESSAGE_UNRECOGNIZED_OPERATOR,
+        this.#currentLocation(),
+      );
+    }
+
+    const operatorNext = simpleToken[operator];
+    if (operatorNext === undefined) {
+      throw new LexerError(
+        "lexer.unrecognized-operator",
+        LEXER_ERROR_MESSAGE_UNRECOGNIZED_OPERATOR,
+        this.#currentLocation(),
+      );
+    }
+
+    const [firstTokenType, operatorNextMap] = operatorNext;
+
+    const nextCharacter = this.#peekChar();
+    if (nextCharacter !== null) {
+      const tokenType = operatorNextMap[nextCharacter];
+      if (tokenType !== undefined) {
+        this.#nextChar();
+
+        return {
+          type: tokenType,
+          value: operator + nextCharacter,
+        };
+      }
+    }
+
+    return {
+      type: firstTokenType,
+      value: operator,
+    };
+  }
+
+  #identifier(): TokenWithoutLocation {
+    let identifier = "";
+    let nextCharacter = this.#peekChar();
+    while (nextCharacter !== null && isIdentifier(nextCharacter)) {
+      identifier += nextCharacter;
+      this.#nextChar();
+      nextCharacter = this.#peekChar();
+    }
+
+    const lowerIdentifier = identifier.toLowerCase();
+
+    if (lowerIdentifier === "false" || lowerIdentifier === "true") {
+      return {
+        type: "boolean",
+        value: lowerIdentifier,
+      };
+    }
+
+    if (lowerIdentifier === "not" || lowerIdentifier === "in") {
+      return { type: lowerIdentifier, value: lowerIdentifier };
+    }
+
+    if (lowerIdentifier === "or") {
+      return { type: "logical-or", value: lowerIdentifier };
+    }
+
+    if (lowerIdentifier === "and") {
+      return { type: "logical-and", value: lowerIdentifier };
+    }
+
+    if (lowerIdentifier === "like") {
+      return { type: "like", value: lowerIdentifier };
+    }
+
+    return { type: "identifier", value: identifier };
+  }
+
+  #unicodeEscape(): string {
+    let hexCode = "";
+    for (let i = 0; i < 4; i++) {
+      const char = this.#peekChar();
+      if (char === null || !isHexDigit(char)) {
+        throw new LexerError(
+          "lexer.expected-end-of-escaped-character",
+          LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+          this.#currentLocation(),
+        );
+      }
+      hexCode += char;
+      this.#nextChar();
+    }
+
+    return String.fromCharCode(parseInt(hexCode, 16));
+  }
+
+  #parameter(): TokenWithoutLocation {
+    const openToken = this.#nextChar();
+
+    let closeToken = "]";
+    if (openToken === "{") closeToken = "}";
+
+    let name = "";
+    let nextCharacter = this.#peekChar();
+    while (nextCharacter !== closeToken && nextCharacter !== null) {
+      name += nextCharacter;
+      this.#nextChar();
+      nextCharacter = this.#peekChar();
+    }
+
+    if (this.#nextChar() !== closeToken)
+      throw new LexerError(
+        "lexer.expected-parameter-close",
+        lexerErrorMessageExpectedParameterClose(closeToken),
+        this.#currentLocation(),
+      );
+
+    return { type: "parameter", value: name };
+  }
+
+  #peekChar(): string | null {
+    if (this.#index < this.#input.length) {
+      return this.#input[this.#index];
+    }
+    return null;
+  }
+
+  #nextChar(): string | null {
+    if (this.#index < this.#input.length) {
+      const c = this.#input[this.#index];
+      this.#index++;
+
+      if (c === "\n") {
+        this.#line++;
+        this.#column = 1;
+      } else {
+        this.#column++;
+      }
+
+      return c;
+    }
+    return null;
+  }
+
+  #region(
+    token: TokenWithoutLocation,
+    tokenStart: {
+      index: number;
+      line: number;
+      column: number;
+    },
+  ): Token {
+    return {
+      ...token,
+      location: new SourceRegion({
+        source: this.#input,
+        offset: tokenStart.index,
+        extent: this.#index - tokenStart.index,
+        line: tokenStart.line,
+        column: tokenStart.column,
+        endLine: this.#line,
+        endColumn: this.#column,
+      }),
+    };
+  }
+
+  #currentLocation(): SourceRegion {
+    return new SourceRegion({
+      source: this.#input,
+      offset: this.#index,
+      extent: 0,
+      line: this.#line,
+      column: this.#column,
+      endLine: this.#line,
+      endColumn: this.#column,
+    });
+  }
+
+  #skipWhitespace(): void {
+    for (;;) {
+      const nextCharacter = this.#peekChar();
+      if (nextCharacter === null || !isWhitespace(nextCharacter)) return;
+      this.#nextChar();
+    }
+  }
+}
+
+function isNumber(s: string): boolean {
+  return s >= "0" && s <= "9";
+}
+
+function isNumberStart(s: string): boolean {
+  return isNumber(s) || s === ".";
+}
+
+function isParameter(s: string): boolean {
+  return s === "[" || s === "{";
+}
+
+function isStringStart(s: string): boolean {
+  return s === "'" || s === '"';
+}
+
+function isDateStart(s: string): boolean {
+  return s === "#";
+}
+
+function isIdentifierStart(s: string): boolean {
+  const lowS = s.toLowerCase();
+  return lowS >= "a" && lowS <= "z";
+}
+
+function isIdentifier(s: string): boolean {
+  const lowS = s.toLowerCase();
+  return (lowS >= "a" && lowS <= "z") || (s >= "0" && s <= "9");
+}
+
+function isHexDigit(s: string): boolean {
+  const lowS = s.toLowerCase();
+  return (s >= "0" && s <= "9") || (lowS >= "a" && lowS <= "f");
+}
+
+function isSimpleToken(s: string): boolean {
+  return s in simpleToken;
+}
+
+const simpleToken: Partial<
+  Record<string, [TokenType, Partial<Record<string, TokenType>>]>
+> = {
+  ">": [
+    "more-than",
+    {
+      ">": "shift-right",
+      "=": "more-than-or-equal",
+    },
+  ],
+  "<": [
+    "less-than",
+    {
+      "<": "shift-left",
+      ">": "not-equal",
+      "=": "less-than-or-equal",
+    },
+  ],
+  "=": [
+    "equals",
+    {
+      "=": "equals",
+    },
+  ],
+  "!": [
+    "logical-not",
+    {
+      "=": "not-equal",
+    },
+  ],
+  "-": ["minus", {}],
+  "|": [
+    "bit-or",
+    {
+      "|": "logical-or",
+    },
+  ],
+  "^": ["bit-xor", {}],
+  "~": ["complement", {}],
+  "?": ["ternary", {}],
+  "*": [
+    "times",
+    {
+      "*": "exp",
+    },
+  ],
+  "/": ["division", {}],
+  "%": ["modulus", {}],
+  "+": ["plus", {}],
+  "&": ["bit-and", { "&": "logical-and" }],
+  "(": ["group-open", {}],
+  ")": ["group-close", {}],
+  ",": ["separator", {}],
+  ":": ["colon", {}],
+};
+
+function isWhitespace(s: string): boolean {
+  return s === " " || s === "\n" || s === "\t" || s === "\r";
+}
