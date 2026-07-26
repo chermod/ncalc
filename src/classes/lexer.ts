@@ -4,10 +4,10 @@ import {
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
-  LEXER_ERROR_MESSAGE_UNRECOGNISED_OPERATOR,
+  LEXER_ERROR_MESSAGE_UNRECOGNIZED_OPERATOR,
   lexerErrorMessageExpectedParameterClose,
   lexerErrorMessageInvalidNumber,
-  lexerErrorMessageUnrecognisedInput,
+  lexerErrorMessageUnrecognizedInput,
 } from "./lexer-messages";
 
 export type TokenType =
@@ -62,13 +62,13 @@ type LexerPosition = {
 };
 
 export type LexerErrorCode =
-  | "lexer.unrecognised-input"
+  | "lexer.unrecognized-input"
   | "lexer.invalid-number"
   | "lexer.expected-end-of-date"
   | "lexer.expected-start-of-string"
   | "lexer.expected-end-of-string"
   | "lexer.expected-end-of-escaped-character"
-  | "lexer.unrecognised-operator"
+  | "lexer.unrecognized-operator"
   | "lexer.expected-parameter-close";
 
 export class LexerError extends NCalcError {
@@ -153,7 +153,7 @@ export class Lexer {
     } else {
       throw new LexerError(
         "lexer.unrecognised-input",
-        lexerErrorMessageUnrecognisedInput(nextCharacter),
+        lexerErrorMessageUnrecognizedInput(nextCharacter),
         new SourceRegion(
           this.#input,
           tokenStart.index,
@@ -346,7 +346,7 @@ export class Lexer {
     if (operator === null) {
       throw new LexerError(
         "lexer.unrecognised-operator",
-        LEXER_ERROR_MESSAGE_UNRECOGNISED_OPERATOR,
+        LEXER_ERROR_MESSAGE_UNRECOGNIZED_OPERATOR,
         this.#currentLocation(),
       );
     }
@@ -355,7 +355,7 @@ export class Lexer {
     if (operatorNext === undefined) {
       throw new LexerError(
         "lexer.unrecognised-operator",
-        LEXER_ERROR_MESSAGE_UNRECOGNISED_OPERATOR,
+        LEXER_ERROR_MESSAGE_UNRECOGNIZED_OPERATOR,
         this.#currentLocation(),
       );
     }

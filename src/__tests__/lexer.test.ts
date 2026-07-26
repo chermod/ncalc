@@ -5,7 +5,7 @@ import {
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
   lexerErrorMessageExpectedParameterClose,
-  lexerErrorMessageUnrecognisedInput,
+  lexerErrorMessageUnrecognizedInput,
 } from "../classes/lexer-messages";
 
 describe("token types", () => {
@@ -197,7 +197,7 @@ describe("errors", () => {
     expect.assertions(1);
 
     expect(() => tokenize("\\")).toThrow(
-      lexerErrorMessageUnrecognisedInput("\\"),
+      lexerErrorMessageUnrecognizedInput("\\"),
     );
   });
 });

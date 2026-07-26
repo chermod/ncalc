@@ -9,11 +9,11 @@ export const LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING =
 export const LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER =
   "Expected end of escaped character";
 
-export const LEXER_ERROR_MESSAGE_UNRECOGNISED_OPERATOR =
-  "Unrecognised input parsing operator";
+export const LEXER_ERROR_MESSAGE_UNRECOGNIZED_OPERATOR =
+  "Unrecognized input parsing operator";
 
-export const lexerErrorMessageUnrecognisedInput = (input: string): string =>
-  `Unrecognised input '${input}'`;
+export const lexerErrorMessageUnrecognizedInput = (input: string): string =>
+  `Unrecognized input '${input}'`;
 
 export const lexerErrorMessageInvalidNumber = (input: string): string =>
   `Invalid number literal '${input}'`;
