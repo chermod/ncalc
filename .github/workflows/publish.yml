@@ -6,6 +6,11 @@ on:
 
 concurrency: ${{github.workflow}}-${{github.ref}}
 
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -24,3 +29,6 @@ jobs:
 
       - name: Create pull request or pubish
         uses: changesets/action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
