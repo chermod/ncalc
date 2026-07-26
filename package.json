@@ -30,7 +30,8 @@
     "check:types": "tsc -b --noEmit",
     "check:package": "publint",
     "check:formatting": "prettier --check .",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "publish": "changeset publish"
   },
   "sideEffects": false,
   "engines": {
