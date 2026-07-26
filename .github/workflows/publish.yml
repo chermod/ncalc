@@ -29,6 +29,8 @@ jobs:
 
       - name: Create pull request or publish
         uses: changesets/action@v1
+        with:
+          commitMode: github-api
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
