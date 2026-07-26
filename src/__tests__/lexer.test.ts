@@ -1,29 +1,94 @@
 import { describe, expect, it } from "vitest";
-import { Lexer, type Token } from "../classes/lexer";
+import { Lexer, type Token, type TokenType } from "../classes/lexer";
+import {
+  LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
+  LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+  LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
+  lexerErrorMessageExpectedParameterClose,
+  lexerErrorMessageUnrecognisedInput,
+} from "../classes/lexer-messages";
 
-type TokenValue = Pick<Token, "type" | "value">;
+describe("token types", () => {
+  it.each<[string, TokenType, string?]>([
+    ["0.23", "number"],
+    ["1.23", "number"],
+    [".123", "number"],
+    ["1e10", "number"],
+    ["1E10", "number"],
+    ["1.0e-20", "number"],
+    ["1.e+10", "number"],
+    ["'hello world'", "string", "hello world"],
+    ["'hello\\nworld'", "string", "hello\nworld"],
+    ["'hello\\rworld'", "string", "hello\rworld"],
+    ["'hello\\tworld'", "string", "hello\tworld"],
+    ["'hello\\'world'", "string", "hello'world"],
+    ["'hello\\\\world'", "string", "hello\\world"],
+    ["'\\u0041'", "string", "A"],
+    ["'\\u0042\\u0043'", "string", "BC"],
+    ["'\\u00E9'", "string", "é"],
+    ["'hello\\u0020world'", "string", "hello world"],
+    ["'hello\\u0041world'", "string", "helloAworld"],
+    ["true", "boolean"],
+    ["false", "boolean"],
+    ["#12/11/2020#", "date", "12/11/2020"],
+    ["#any string#", "date", "any string"],
+    ["myIdentifier1", "identifier"],
+    ["+", "plus"],
+    ["-", "minus"],
+    ["/", "division"],
+    ["*", "times"],
+    ["%", "modulus"],
+    ["**", "exp"],
+    ["<", "less-than"],
+    [">", "more-than"],
+    ["<=", "less-than-or-equal"],
+    [">=", "more-than-or-equal"],
+    ["in", "in"],
+    ["not", "not"],
+    ["!", "logical-not"],
+    ["!=", "not-equal"],
+    ["=", "equals"],
+    ["?", "ternary"],
+    ["<>", "not-equal"],
+    ["&", "bit-and"],
+    ["|", "bit-or"],
+    ["&&", "logical-and"],
+    ["||", "logical-or"],
+    ["^", "bit-xor"],
+    ["~", "complement"],
+    ["and", "logical-and"],
+    ["or", "logical-or"],
+    ["(", "group-open"],
+    [")", "group-close"],
+    [",", "separator"],
+    ["[MyParam1]", "parameter", "MyParam1"],
+    ["{MyParam}", "parameter", "MyParam"],
+    [":", "colon"],
+    ["like", "like"],
+  ])("reads %s as token type %s", (s, type, clean) => {
+    expect.assertions(1);
 
-function getTokens(s: string): Token[] {
-  const tokens = [];
-  let token;
-  const lexer = new Lexer(s);
-  while ((token = lexer.next()) !== null) {
-    tokens.push(token);
-  }
-  return tokens;
-}
-
-function getTokenValues(s: string): TokenValue[] {
-  return getTokens(s).map((token) => ({
-    type: token.type,
-    value: token.value,
-  }));
-}
+    expect(tokenize(s)).toMatchObject([{ type, value: clean ?? s }]);
+  });
+});
 
 describe("whitespace", () => {
+  it("can function with whitespace", () => {
+    expect.assertions(1);
+
+    expect(
+      tokenize("1.23                 +                      .123"),
+    ).toMatchObject([
+      { type: "number", value: "1.23" },
+      { type: "plus", value: "+" },
+      { type: "number", value: ".123" },
+    ]);
+  });
+
   it("can function without whitespace", () => {
     expect.assertions(1);
-    expect(getTokens("1.23+.123")).toMatchObject([
+
+    expect(tokenize("1.23+.123")).toMatchObject([
       { type: "number", value: "1.23" },
       { type: "plus", value: "+" },
       { type: "number", value: ".123" },
@@ -31,172 +96,21 @@ describe("whitespace", () => {
   });
 });
 
-describe("literal", () => {
-  it("reads number", () => {
-    expect.assertions(1);
-    expect(getTokens("1.23 .123 1e10 1E10 1.0e-20 1.e+10")).toMatchObject([
-      { type: "number", value: "1.23" },
-      { type: "number", value: ".123" },
-      { type: "number", value: "1e10" },
-      { type: "number", value: "1E10" },
-      { type: "number", value: "1.0e-20" },
-      { type: "number", value: "1.e+10" },
-    ]);
-  });
-
-  it("reads string", () => {
-    expect.assertions(1);
-
-    expect(getTokens('"hello world"')).toMatchObject([
-      { type: "string", value: "hello world" },
-    ]);
-  });
-
-  it("handles escape sequences in strings", () => {
-    expect.assertions(1);
-
-    expect(
-      getTokens(
-        "'hello\\nworld' 'hello\\tworld' 'hello\\'world' 'hello\\\\world'",
-      ),
-    ).toMatchObject([
-      { type: "string", value: "hello\nworld" },
-      { type: "string", value: "hello\tworld" },
-      { type: "string", value: "hello'world" },
-      { type: "string", value: "hello\\world" },
-    ]);
-  });
-
-  it("handles unicode escape sequences", () => {
-    expect.assertions(1);
-
-    expect(getTokens("'\\u0041' '\\u0042\\u0043' '\\u00E9'")).toMatchObject([
-      { type: "string", value: "A" },
-      { type: "string", value: "BC" },
-      { type: "string", value: "é" },
-    ]);
-  });
-
-  it("handles unicode escapes mixed with text", () => {
-    expect.assertions(1);
-
-    expect(getTokens("'hello\\u0020world' 'hello\\u0041world'")).toMatchObject([
-      { type: "string", value: "hello world" },
-      { type: "string", value: "helloAworld" },
-    ]);
-  });
-
-  it("reads boolean", () => {
-    expect.assertions(1);
-    expect(getTokens("true false")).toMatchObject([
-      { type: "boolean", value: "true" },
-      { type: "boolean", value: "false" },
-    ]);
-  });
-
-  it("reads date", () => {
-    expect.assertions(1);
-    expect(getTokens("#12/11/2020#")).toMatchObject([
-      { type: "date", value: "12/11/2020" },
-    ]);
-  });
-
-  it.each([".", "1e", "1e+", "1e-"])(
-    "rejects invalid number literal %s",
-    (expression) => {
-      expect.assertions(1);
-      expect(() => getTokens(expression)).toThrow("Invalid number literal");
-    },
-  );
-});
-
-describe("identifier", () => {
-  it("reads identifier", () => {
-    expect.assertions(1);
-    expect(getTokens("myIdentifier")).toMatchObject([
-      { type: "identifier", value: "myIdentifier" },
-    ]);
-  });
-});
-
-describe("operator", () => {
-  it("reads operators", () => {
-    expect.assertions(1);
-    expect(
-      getTokenValues(
-        "+ - / * % ** < > <= >= in not ! != = ? <> & | && || ^ ~ and or",
-      ),
-    ).toMatchObject([
-      { type: "plus", value: "+" },
-      { type: "minus", value: "-" },
-      { type: "division", value: "/" },
-      { type: "times", value: "*" },
-      { type: "modulus", value: "%" },
-      { type: "exp", value: "**" },
-      { type: "less-than", value: "<" },
-      { type: "more-than", value: ">" },
-      { type: "less-than-or-equal", value: "<=" },
-      { type: "more-than-or-equal", value: ">=" },
-      { type: "in", value: "in" },
-      { type: "not", value: "not" },
-      { type: "logical-not", value: "!" },
-      { type: "not-equal", value: "!=" },
-      { type: "equals", value: "=" },
-      { type: "ternary", value: "?" },
-      { type: "not-equal", value: "<>" },
-      { type: "bit-and", value: "&" },
-      { type: "bit-or", value: "|" },
-      { type: "logical-and", value: "&&" },
-      { type: "logical-or", value: "||" },
-      { type: "bit-xor", value: "^" },
-      { type: "complement", value: "~" },
-      { type: "logical-and", value: "and" },
-      { type: "logical-or", value: "or" },
-    ]);
-  });
-});
-
-describe("keywords", () => {
-  it("reads group open / close", () => {
-    expect.assertions(1);
-    expect(getTokens("()")).toMatchObject([
-      { type: "group-open", value: "(" },
-      { type: "group-close", value: ")" },
-    ]);
-  });
-
-  it("reads separator", () => {
-    expect.assertions(1);
-    expect(getTokens(",")).toMatchObject([{ type: "separator", value: "," }]);
-  });
-
-  it("reads parameter", () => {
-    expect.assertions(1);
-    expect(getTokens("[MyParam1] {MyParam}")).toMatchObject([
-      { type: "parameter", value: "MyParam1" },
-      { type: "parameter", value: "MyParam" },
-    ]);
-  });
-
-  it("reads colon", () => {
-    expect.assertions(1);
-    expect(getTokens(":")).toMatchObject([{ type: "colon", value: ":" }]);
-  });
-
-  it("tracks source region offsets", () => {
+describe("source tracking", () => {
+  it("tracks offsets", () => {
     expect.assertions(3);
 
-    const [first] = getTokens("  1\n+ 2");
+    const [first] = tokenize("  1\n+ 2");
 
     expect(first.location.offset).toBe(2);
     expect(first.location.line).toBe(1);
     expect(first.location.column).toBe(3);
   });
 
-  it("tracks source region lines", () => {
+  it("tracks lines", () => {
     expect.assertions(4);
 
-    const [, second, third] = getTokens("  1\n+ 2");
+    const [, second, third] = tokenize("  1\n+ 2");
 
     expect(second.location.line).toBe(2);
     expect(second.location.column).toBe(1);
@@ -204,3 +118,101 @@ describe("keywords", () => {
     expect(third.location.column).toBe(3);
   });
 });
+
+describe("errors", () => {
+  it.each([".", "1e", "1e+", "1e-"])(
+    "rejects invalid number literal %s",
+    (expression) => {
+      expect.assertions(1);
+
+      expect(() => tokenize(expression)).toThrow("Invalid number literal");
+    },
+  );
+
+  it("rejects incomplete square brackets parameter", () => {
+    expect.assertions(1);
+
+    expect(() => tokenize("[Incomplete Parameter")).toThrow(
+      lexerErrorMessageExpectedParameterClose("]"),
+    );
+  });
+
+  it("rejects incomplete braces parameter", () => {
+    expect.assertions(1);
+
+    expect(() => tokenize("{Incomplete Parameter")).toThrow(
+      lexerErrorMessageExpectedParameterClose("}"),
+    );
+  });
+
+  it("rejects incomplete unicode literals", () => {
+    expect.assertions(1);
+
+    expect(() => tokenize("'\\u123'")).toThrow(
+      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+    );
+  });
+
+  it("rejects incomplete string", () => {
+    expect.assertions(1);
+
+    expect(() => tokenize("'a string")).toThrow(
+      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
+    );
+  });
+
+  it("rejects incomplete empty string", () => {
+    expect.assertions(1);
+
+    expect(() => tokenize("'")).toThrow(
+      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
+    );
+  });
+
+  it("rejects incomplete string escape", () => {
+    expect.assertions(1);
+
+    expect(() => tokenize("'a string\\Z")).toThrow(
+      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+    );
+  });
+
+  it("rejects incomplete date", () => {
+    expect.assertions(1);
+
+    expect(() => tokenize("#a date")).toThrow(
+      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
+    );
+  });
+
+  it("rejects incomplete empty date", () => {
+    expect.assertions(1);
+
+    expect(() => tokenize("#")).toThrow(
+      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
+    );
+  });
+
+  it("rejects unrecognized input", () => {
+    expect.assertions(1);
+
+    expect(() => tokenize("\\")).toThrow(
+      lexerErrorMessageUnrecognisedInput("\\"),
+    );
+  });
+});
+
+function tokenize(s: string): Token[] {
+  const tokens = [];
+  let token;
+  const lexer = new Lexer(s);
+  let tokenCount = 0;
+  while ((token = lexer.next()) !== null) {
+    tokens.push(token);
+    tokenCount++;
+    if (tokenCount > 1000) {
+      expect.fail("Encountered too many tokens");
+    }
+  }
+  return tokens;
+}

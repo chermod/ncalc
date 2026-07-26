@@ -4,7 +4,6 @@ import {
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
-  LEXER_ERROR_MESSAGE_EXPECTED_START_OF_STRING,
   LEXER_ERROR_MESSAGE_UNRECOGNISED_OPERATOR,
   lexerErrorMessageExpectedParameterClose,
   lexerErrorMessageInvalidNumber,
@@ -190,13 +189,8 @@ export class Lexer {
       this.#nextChar();
     }
 
-    if (this.#nextChar() !== "#") {
-      throw new LexerError(
-        "lexer.expected-end-of-date",
-        LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
-        this.#currentLocation(),
-      );
-    }
+    this.#nextChar();
+
     return {
       type: "date",
       value: completeLiteral,
@@ -205,13 +199,7 @@ export class Lexer {
 
   #string(): TokenWithoutLocation {
     const stringStartChar = this.#nextChar();
-    if (stringStartChar !== "'" && stringStartChar !== '"') {
-      throw new LexerError(
-        "lexer.expected-start-of-string",
-        LEXER_ERROR_MESSAGE_EXPECTED_START_OF_STRING,
-        this.#currentLocation(),
-      );
-    }
+
     let contents = "";
 
     let withinEscape = false;
@@ -264,13 +252,7 @@ export class Lexer {
       }
     }
 
-    if (this.#nextChar() !== stringStartChar) {
-      throw new LexerError(
-        "lexer.expected-end-of-string",
-        LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
-        this.#currentLocation(),
-      );
-    }
+    this.#nextChar();
 
     return { type: "string", value: contents };
   }
@@ -369,8 +351,6 @@ export class Lexer {
       );
     }
 
-    const nextCharacter = this.#peekChar();
-
     const operatorNext = operatorTrie[operator];
     if (operatorNext === undefined) {
       throw new LexerError(
@@ -382,6 +362,7 @@ export class Lexer {
 
     const [firstTokenType, operatorNextMap] = operatorNext;
 
+    const nextCharacter = this.#peekChar();
     if (nextCharacter !== null) {
       const tokenType = operatorNextMap[nextCharacter];
       if (tokenType !== undefined) {
