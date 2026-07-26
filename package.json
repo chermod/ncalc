@@ -21,9 +21,16 @@
   "bugs": {
     "url": "https://github.com/chermod/ncalc/issues"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsdown",
+    "test": "vitest --run",
+    "check:types": "tsc -b --noEmit",
     "check:package": "publint",
-    "check:formatting": "prettier --check ."
+    "check:formatting": "prettier --check .",
+    "prepublishOnly": "npm run build"
   },
   "sideEffects": false,
   "engines": {
@@ -34,6 +41,13 @@
   },
   "devDependencies": {
     "prettier": "^3.8.4",
-    "publint": "^0.3.21"
+    "publint": "^0.3.21",
+    "tsdown": "^0.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  },
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
   }
 }
