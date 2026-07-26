@@ -5,6 +5,7 @@
     "@chermod/ncalc": "0.0.1-alpha"
   },
   "changesets": [
+    "fine-eels-love",
     "lucky-sheep-wash"
   ]
 }

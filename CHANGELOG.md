@@ -1,5 +1,11 @@
 # @chermod/ncalc
 
+## 0.0.1-alpha.1
+
+### Patch Changes
+
+- e157fec: Validate publish 2
+
 ## 0.0.1-alpha.0
 
 ### Patch Changes
