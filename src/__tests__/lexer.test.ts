@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { Lexer, type Token, type TokenType } from "../classes/lexer";
-import { LexerError } from "../classes/lexer-error";
 import {
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
@@ -143,31 +142,23 @@ describe("errors", () => {
   it.each([".", "1e", "1e+", "1e-"])(
     "rejects invalid number literal %s",
     (expression) => {
-      expect.assertions(2);
+      expect.assertions(1);
 
-      let error;
-
-      try {
-        tokenize(expression);
-
-        expect.fail("Expected tokenize to throw");
-      } catch (e) {
-        error = e;
-      }
-
-      expect(error).toBeInstanceOf(LexerError);
-      expect(error).toMatchObject({
-        code: "lexer.invalid-number",
-        location: {
-          source: expression,
-          offset: expression.length,
-          extent: 0,
-          line: 1,
-          column: expression.length + 1,
-          endLine: 1,
-          endColumn: expression.length + 1,
-        },
-      });
+      expect(() => tokenize(expression)).toThrow(
+        expect.objectContaining({
+          code: "lexer.invalid-number",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          location: expect.objectContaining({
+            source: expression,
+            offset: expression.length,
+            extent: 0,
+            line: 1,
+            column: expression.length + 1,
+            endLine: 1,
+            endColumn: expression.length + 1,
+          }),
+        }),
+      );
     },
   );
 
@@ -175,7 +166,20 @@ describe("errors", () => {
     expect.assertions(1);
 
     expect(() => tokenize("[Incomplete Parameter")).toThrow(
-      lexerErrorMessageExpectedParameterClose("]"),
+      expect.objectContaining({
+        code: "lexer.expected-parameter-close",
+        message: lexerErrorMessageExpectedParameterClose("]"),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "[Incomplete Parameter",
+          offset: 21,
+          extent: 0,
+          line: 1,
+          column: 22,
+          endLine: 1,
+          endColumn: 22,
+        }),
+      }),
     );
   });
 
@@ -183,7 +187,20 @@ describe("errors", () => {
     expect.assertions(1);
 
     expect(() => tokenize("{Incomplete Parameter")).toThrow(
-      lexerErrorMessageExpectedParameterClose("}"),
+      expect.objectContaining({
+        code: "lexer.expected-parameter-close",
+        message: lexerErrorMessageExpectedParameterClose("}"),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "{Incomplete Parameter",
+          offset: 21,
+          extent: 0,
+          line: 1,
+          column: 22,
+          endLine: 1,
+          endColumn: 22,
+        }),
+      }),
     );
   });
 
@@ -191,7 +208,20 @@ describe("errors", () => {
     expect.assertions(1);
 
     expect(() => tokenize("'\\u123'")).toThrow(
-      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+      expect.objectContaining({
+        code: "lexer.expected-end-of-escaped-character",
+        message: LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "'\\u123'",
+          offset: 6,
+          extent: 0,
+          line: 1,
+          column: 7,
+          endLine: 1,
+          endColumn: 7,
+        }),
+      }),
     );
   });
 
@@ -199,43 +229,61 @@ describe("errors", () => {
     expect.assertions(1);
 
     expect(() => tokenize("'\\uZZZZ'")).toThrow(
-      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+      expect.objectContaining({
+        code: "lexer.expected-end-of-escaped-character",
+        message: LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "'\\uZZZZ'",
+          offset: 3,
+          extent: 0,
+          line: 1,
+          column: 4,
+          endLine: 1,
+          endColumn: 4,
+        }),
+      }),
     );
   });
 
   it("rejects incomplete string", () => {
-    expect.assertions(2);
+    expect.assertions(1);
 
-    let error;
-    try {
-      tokenize("'a\nstring");
-
-      expect.fail("Expected tokenize to throw");
-    } catch (e) {
-      error = e;
-    }
-
-    expect(error).toBeInstanceOf(LexerError);
-
-    expect(error).toMatchObject({
-      code: "lexer.expected-end-of-string",
-      location: {
-        source: "'a\nstring",
-        offset: 9,
-        extent: 0,
-        line: 2,
-        column: 7,
-        endLine: 2,
-        endColumn: 7,
-      },
-    });
+    expect(() => tokenize("'a\nstring")).toThrow(
+      expect.objectContaining({
+        code: "lexer.expected-end-of-string",
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "'a\nstring",
+          offset: 9,
+          extent: 0,
+          line: 2,
+          column: 7,
+          endLine: 2,
+          endColumn: 7,
+        }),
+      }),
+    );
   });
 
   it("rejects incomplete empty string", () => {
     expect.assertions(1);
 
     expect(() => tokenize("'")).toThrow(
-      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
+      expect.objectContaining({
+        code: "lexer.expected-end-of-string",
+        message: LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "'",
+          offset: 1,
+          extent: 0,
+          line: 1,
+          column: 2,
+          endLine: 1,
+          endColumn: 2,
+        }),
+      }),
     );
   });
 
@@ -249,10 +297,36 @@ describe("errors", () => {
     expect(lexer.peek()).toMatchObject(token);
     expect(lexer.next()).toMatchObject(token);
     expect(() => lexer.peek()).toThrow(
-      lexerErrorMessageUnrecognizedInput("\\"),
+      expect.objectContaining({
+        code: "lexer.unrecognized-input",
+        message: lexerErrorMessageUnrecognizedInput("\\"),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "1 \\",
+          offset: 2,
+          extent: 1,
+          line: 1,
+          column: 3,
+          endLine: 1,
+          endColumn: 4,
+        }),
+      }),
     );
     expect(() => lexer.next()).toThrow(
-      lexerErrorMessageUnrecognizedInput("\\"),
+      expect.objectContaining({
+        code: "lexer.unrecognized-input",
+        message: lexerErrorMessageUnrecognizedInput("\\"),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "1 \\",
+          offset: 2,
+          extent: 1,
+          line: 1,
+          column: 3,
+          endLine: 1,
+          endColumn: 4,
+        }),
+      }),
     );
   });
 
@@ -260,7 +334,20 @@ describe("errors", () => {
     expect.assertions(1);
 
     expect(() => tokenize("'a string\\Z")).toThrow(
-      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+      expect.objectContaining({
+        code: "lexer.expected-end-of-escaped-character",
+        message: LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "'a string\\Z",
+          offset: 10,
+          extent: 0,
+          line: 1,
+          column: 11,
+          endLine: 1,
+          endColumn: 11,
+        }),
+      }),
     );
   });
 
@@ -268,7 +355,20 @@ describe("errors", () => {
     expect.assertions(1);
 
     expect(() => tokenize("'a string\\")).toThrow(
-      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+      expect.objectContaining({
+        code: "lexer.expected-end-of-escaped-character",
+        message: LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "'a string\\",
+          offset: 10,
+          extent: 0,
+          line: 1,
+          column: 11,
+          endLine: 1,
+          endColumn: 11,
+        }),
+      }),
     );
   });
 
@@ -276,7 +376,20 @@ describe("errors", () => {
     expect.assertions(1);
 
     expect(() => tokenize("#a date")).toThrow(
-      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
+      expect.objectContaining({
+        code: "lexer.expected-end-of-date",
+        message: LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "#a date",
+          offset: 7,
+          extent: 0,
+          line: 1,
+          column: 8,
+          endLine: 1,
+          endColumn: 8,
+        }),
+      }),
     );
   });
 
@@ -284,7 +397,20 @@ describe("errors", () => {
     expect.assertions(1);
 
     expect(() => tokenize("#")).toThrow(
-      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
+      expect.objectContaining({
+        code: "lexer.expected-end-of-date",
+        message: LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "#",
+          offset: 1,
+          extent: 0,
+          line: 1,
+          column: 2,
+          endLine: 1,
+          endColumn: 2,
+        }),
+      }),
     );
   });
 
@@ -292,7 +418,20 @@ describe("errors", () => {
     expect.assertions(1);
 
     expect(() => tokenize("\\")).toThrow(
-      lexerErrorMessageUnrecognizedInput("\\"),
+      expect.objectContaining({
+        code: "lexer.unrecognized-input",
+        message: lexerErrorMessageUnrecognizedInput("\\"),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        location: expect.objectContaining({
+          source: "\\",
+          offset: 0,
+          extent: 1,
+          line: 1,
+          column: 1,
+          endLine: 1,
+          endColumn: 2,
+        }),
+      }),
     );
   });
 });
