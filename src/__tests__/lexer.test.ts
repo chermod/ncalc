@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Lexer, type Token, type TokenType } from "../classes/lexer";
+import { LexerError } from "../classes/lexer-error";
 import {
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
@@ -142,9 +143,31 @@ describe("errors", () => {
   it.each([".", "1e", "1e+", "1e-"])(
     "rejects invalid number literal %s",
     (expression) => {
-      expect.assertions(1);
+      expect.assertions(2);
 
-      expect(() => tokenize(expression)).toThrow("Invalid number literal");
+      let error;
+
+      try {
+        tokenize(expression);
+
+        expect.fail("Expected tokenize to throw");
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).toBeInstanceOf(LexerError);
+      expect(error).toMatchObject({
+        code: "lexer.invalid-number",
+        location: {
+          source: expression,
+          offset: expression.length,
+          extent: 0,
+          line: 1,
+          column: expression.length + 1,
+          endLine: 1,
+          endColumn: expression.length + 1,
+        },
+      });
     },
   );
 
@@ -181,11 +204,31 @@ describe("errors", () => {
   });
 
   it("rejects incomplete string", () => {
-    expect.assertions(1);
+    expect.assertions(2);
 
-    expect(() => tokenize("'a string")).toThrow(
-      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
-    );
+    let error;
+    try {
+      tokenize("'a\nstring");
+
+      expect.fail("Expected tokenize to throw");
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).toBeInstanceOf(LexerError);
+
+    expect(error).toMatchObject({
+      code: "lexer.expected-end-of-string",
+      location: {
+        source: "'a\nstring",
+        offset: 9,
+        extent: 0,
+        line: 2,
+        column: 7,
+        endLine: 2,
+        endColumn: 7,
+      },
+    });
   });
 
   it("rejects incomplete empty string", () => {
