@@ -27,7 +27,7 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Create pull request or pubish
+      - name: Create pull request or publish
         uses: changesets/action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

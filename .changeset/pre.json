@@ -1,0 +1,8 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "@chermod/ncalc": "0.0.1-alpha"
+  },
+  "changesets": []
+}
