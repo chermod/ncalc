@@ -40,6 +40,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "prettier": "^3.8.4",
     "publint": "^0.3.21",
     "tsdown": "^0.22.3",
