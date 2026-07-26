@@ -18,6 +18,7 @@ describe("token types", () => {
     ["1.0e-20", "number"],
     ["1.e+10", "number"],
     ["'hello world'", "string", "hello world"],
+    ['"hello world"', "string", "hello world"],
     ["'hello\\nworld'", "string", "hello\nworld"],
     ["'hello\\rworld'", "string", "hello\rworld"],
     ["'hello\\tworld'", "string", "hello\tworld"],
@@ -56,6 +57,9 @@ describe("token types", () => {
     ["||", "logical-or"],
     ["^", "bit-xor"],
     ["~", "complement"],
+    [">>", "shift-right"],
+    ["<<", "shift-left"],
+    ["==", "equals"],
     ["and", "logical-and"],
     ["or", "logical-or"],
     ["(", "group-open"],
@@ -98,24 +102,39 @@ describe("whitespace", () => {
 
 describe("source tracking", () => {
   it("tracks offsets", () => {
-    expect.assertions(3);
+    expect.assertions(1);
 
     const [first] = tokenize("  1\n+ 2");
 
-    expect(first.location.offset).toBe(2);
-    expect(first.location.line).toBe(1);
-    expect(first.location.column).toBe(3);
+    expect(first.location).toMatchObject({
+      offset: 2,
+      line: 1,
+      column: 3,
+      extent: 1,
+      endLine: 1,
+      endColumn: 4,
+    });
   });
 
   it("tracks lines", () => {
-    expect.assertions(4);
+    expect.assertions(2);
 
     const [, second, third] = tokenize("  1\n+ 2");
 
-    expect(second.location.line).toBe(2);
-    expect(second.location.column).toBe(1);
-    expect(third.location.line).toBe(2);
-    expect(third.location.column).toBe(3);
+    expect(second.location).toMatchObject({
+      line: 2,
+      column: 1,
+      extent: 1,
+      endLine: 2,
+      endColumn: 2,
+    });
+    expect(third.location).toMatchObject({
+      line: 2,
+      column: 3,
+      extent: 1,
+      endLine: 2,
+      endColumn: 4,
+    });
   });
 });
 
@@ -153,6 +172,14 @@ describe("errors", () => {
     );
   });
 
+  it("rejects invalid unicode literals", () => {
+    expect.assertions(1);
+
+    expect(() => tokenize("'\\uZZZZ'")).toThrow(
+      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+    );
+  });
+
   it("rejects incomplete string", () => {
     expect.assertions(1);
 
@@ -166,6 +193,23 @@ describe("errors", () => {
 
     expect(() => tokenize("'")).toThrow(
       LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
+    );
+  });
+
+  it("does not error early if next token is invalid", () => {
+    expect.assertions(4);
+
+    const lexer = new Lexer("1 \\");
+
+    const token = { type: "number", value: "1" };
+
+    expect(lexer.peek()).toMatchObject(token);
+    expect(lexer.next()).toMatchObject(token);
+    expect(() => lexer.peek()).toThrow(
+      lexerErrorMessageUnrecognizedInput("\\"),
+    );
+    expect(() => lexer.next()).toThrow(
+      lexerErrorMessageUnrecognizedInput("\\"),
     );
   });
 

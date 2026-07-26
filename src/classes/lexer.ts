@@ -69,12 +69,13 @@ export class Lexer {
 
   peek(): Token | null {
     if (this.#nextToken !== null) return this.#nextToken;
+
     return (this.#nextToken = this.#getNext());
   }
 
   next(): Token | null {
     this.#currentToken = this.peek();
-    this.#nextToken = this.#getNext();
+    this.#nextToken = null;
     return this.#currentToken;
   }
 
@@ -95,18 +96,10 @@ export class Lexer {
       return this.#region(this.#string(), tokenStart);
     } else if (isDateStart(nextCharacter)) {
       return this.#region(this.#date(), tokenStart);
-    } else if (isOperatorStart(nextCharacter)) {
+    } else if (isSimpleToken(nextCharacter)) {
       return this.#region(this.#operator(), tokenStart);
-    } else if (isGroupOpen(nextCharacter)) {
-      return this.#region(this.#groupOpen(), tokenStart);
-    } else if (isColon(nextCharacter)) {
-      return this.#region(this.#colon(), tokenStart);
-    } else if (isGroupClose(nextCharacter)) {
-      return this.#region(this.#groupClose(), tokenStart);
     } else if (isParameter(nextCharacter)) {
       return this.#region(this.#parameter(), tokenStart);
-    } else if (isSeparator(nextCharacter)) {
-      return this.#region(this.#separator(), tokenStart);
     } else if (isIdentifierStart(nextCharacter)) {
       return this.#region(this.#identifier(), tokenStart);
     } else {
@@ -124,11 +117,6 @@ export class Lexer {
         }),
       );
     }
-  }
-
-  #colon(): TokenWithoutLocation {
-    this.#nextChar();
-    return { type: "colon", value: ":" };
   }
 
   #date(): TokenWithoutLocation {
@@ -310,7 +298,7 @@ export class Lexer {
       );
     }
 
-    const operatorNext = operatorTrie[operator];
+    const operatorNext = simpleToken[operator];
     if (operatorNext === undefined) {
       throw new LexerError(
         "lexer.unrecognized-operator",
@@ -338,21 +326,6 @@ export class Lexer {
       type: firstTokenType,
       value: operator,
     };
-  }
-
-  #groupOpen(): TokenWithoutLocation {
-    this.#nextChar();
-    return { type: "group-open", value: "(" };
-  }
-
-  #groupClose(): TokenWithoutLocation {
-    this.#nextChar();
-    return { type: "group-close", value: ")" };
-  }
-
-  #separator(): TokenWithoutLocation {
-    this.#nextChar();
-    return { type: "separator", value: "," };
   }
 
   #identifier(): TokenWithoutLocation {
@@ -502,38 +475,11 @@ export class Lexer {
 }
 
 function isNumber(s: string): boolean {
-  switch (s) {
-    case "0":
-    case "1":
-    case "2":
-    case "3":
-    case "4":
-    case "5":
-    case "6":
-    case "7":
-    case "8":
-    case "9":
-      return true;
-  }
-  return false;
+  return s >= "0" && s <= "9";
 }
 
 function isNumberStart(s: string): boolean {
-  switch (s) {
-    case "0":
-    case "1":
-    case "2":
-    case "3":
-    case "4":
-    case "5":
-    case "6":
-    case "7":
-    case "8":
-    case "9":
-    case ".":
-      return true;
-  }
-  return false;
+  return isNumber(s) || s === ".";
 }
 
 function isParameter(s: string): boolean {
@@ -546,22 +492,6 @@ function isStringStart(s: string): boolean {
 
 function isDateStart(s: string): boolean {
   return s === "#";
-}
-
-function isGroupOpen(s: string): boolean {
-  return s === "(";
-}
-
-function isGroupClose(s: string): boolean {
-  return s === ")";
-}
-
-function isColon(s: string): boolean {
-  return s === ":";
-}
-
-function isSeparator(s: string): boolean {
-  return s === ",";
 }
 
 function isIdentifierStart(s: string): boolean {
@@ -579,11 +509,11 @@ function isHexDigit(s: string): boolean {
   return (s >= "0" && s <= "9") || (lowS >= "a" && lowS <= "f");
 }
 
-function isOperatorStart(s: string): boolean {
-  return s in operatorTrie;
+function isSimpleToken(s: string): boolean {
+  return s in simpleToken;
 }
 
-const operatorTrie: Partial<
+const simpleToken: Partial<
   Record<string, [TokenType, Partial<Record<string, TokenType>>]>
 > = {
   ">": [
@@ -633,6 +563,10 @@ const operatorTrie: Partial<
   "%": ["modulus", {}],
   "+": ["plus", {}],
   "&": ["bit-and", { "&": "logical-and" }],
+  "(": ["group-open", {}],
+  ")": ["group-close", {}],
+  ",": ["separator", {}],
+  ":": ["colon", {}],
 };
 
 function isWhitespace(s: string): boolean {
