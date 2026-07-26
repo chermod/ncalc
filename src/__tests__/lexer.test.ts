@@ -264,6 +264,14 @@ describe("errors", () => {
     );
   });
 
+  it("rejects incomplete string escape at end of string", () => {
+    expect.assertions(1);
+
+    expect(() => tokenize("'a string\\")).toThrow(
+      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+    );
+  });
+
   it("rejects incomplete date", () => {
     expect.assertions(1);
 

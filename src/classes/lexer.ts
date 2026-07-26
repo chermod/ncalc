@@ -154,6 +154,14 @@ export class Lexer {
     for (;;) {
       const nextCharacter = this.#peekChar();
       if (nextCharacter === null) {
+        if (withinEscape) {
+          throw new LexerError(
+            "lexer.expected-end-of-escaped-character",
+            LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+            this.#currentLocation(),
+          );
+        }
+
         throw new LexerError(
           "lexer.expected-end-of-string",
           LEXER_ERROR_MESSAGE_EXPECTED_END_OF_STRING,
