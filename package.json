@@ -31,7 +31,7 @@
     "check:package": "publint",
     "check:formatting": "prettier --check .",
     "prepublishOnly": "npm run build",
-    "publish": "changeset publish"
+    "release": "changeset publish"
   },
   "sideEffects": false,
   "engines": {
