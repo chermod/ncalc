@@ -4,6 +4,18 @@ import { LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER } from "../classe
 import { SourceRegion } from "../classes/source-region";
 
 describe("detailed message", () => {
+  it("is formatted when region is missing", () => {
+    expect.assertions(1);
+
+    const error = new LexerError(
+      "lexer.expected-end-of-escaped-character",
+      LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
+      null,
+    );
+
+    expect(error.detailedMessage).toBe("Expected end of escaped character");
+  });
+
   it("is formatted", () => {
     expect.assertions(1);
 
