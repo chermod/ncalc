@@ -1,5 +1,4 @@
 import { SourceRegion } from "./source-region";
-import { NCalcError } from "./ncalc-error";
 import {
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_DATE,
   LEXER_ERROR_MESSAGE_EXPECTED_END_OF_ESCAPED_CHARACTER,
@@ -9,6 +8,7 @@ import {
   lexerErrorMessageInvalidNumber,
   lexerErrorMessageUnrecognizedInput,
 } from "./lexer-messages";
+import { LexerError } from "./lexer-error";
 
 export type TokenType =
   | "group-open"
@@ -55,51 +55,6 @@ export type Token = {
 
 type TokenWithoutLocation = Omit<Token, "location">;
 
-type LexerPosition = {
-  index: number;
-  line: number;
-  column: number;
-};
-
-export type LexerErrorCode =
-  | "lexer.unrecognized-input"
-  | "lexer.invalid-number"
-  | "lexer.expected-end-of-date"
-  | "lexer.expected-start-of-string"
-  | "lexer.expected-end-of-string"
-  | "lexer.expected-end-of-escaped-character"
-  | "lexer.unrecognized-operator"
-  | "lexer.expected-parameter-close";
-
-export class LexerError extends NCalcError {
-  public readonly code: LexerErrorCode;
-  public readonly location: SourceRegion | null;
-
-  constructor(
-    code: LexerErrorCode,
-    message: string,
-    location: SourceRegion | null,
-  ) {
-    super(message);
-    Object.setPrototypeOf(this, LexerError.prototype);
-    this.code = code;
-    this.location = location;
-  }
-
-  get where(): SourceRegion | null {
-    return this.location;
-  }
-
-  get detailedMessage(): string {
-    if (this.location === null) {
-      return this.message;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    return `${this.message} at line ${this.location.line}, column ${this.location.column}`;
-  }
-}
-
 export class Lexer {
   readonly #input: string;
   #index: number = 0;
@@ -125,7 +80,11 @@ export class Lexer {
 
   #getNext(): Token | null {
     this.#skipWhitespace();
-    const tokenStart = this.#position();
+    const tokenStart = {
+      index: this.#index,
+      line: this.#line,
+      column: this.#column,
+    };
     const nextCharacter = this.#peekChar();
 
     if (nextCharacter === null) return null;
@@ -152,17 +111,17 @@ export class Lexer {
       return this.#region(this.#identifier(), tokenStart);
     } else {
       throw new LexerError(
-        "lexer.unrecognised-input",
+        "lexer.unrecognized-input",
         lexerErrorMessageUnrecognizedInput(nextCharacter),
-        new SourceRegion(
-          this.#input,
-          tokenStart.index,
-          1,
-          tokenStart.line,
-          tokenStart.column,
-          tokenStart.line,
-          tokenStart.column + 1,
-        ),
+        new SourceRegion({
+          source: this.#input,
+          offset: tokenStart.index,
+          extent: 1,
+          line: tokenStart.line,
+          column: tokenStart.column,
+          endLine: tokenStart.line,
+          endColumn: tokenStart.column + 1,
+        }),
       );
     }
   }
@@ -345,7 +304,7 @@ export class Lexer {
     const operator = this.#nextChar();
     if (operator === null) {
       throw new LexerError(
-        "lexer.unrecognised-operator",
+        "lexer.unrecognized-operator",
         LEXER_ERROR_MESSAGE_UNRECOGNIZED_OPERATOR,
         this.#currentLocation(),
       );
@@ -354,7 +313,7 @@ export class Lexer {
     const operatorNext = operatorTrie[operator];
     if (operatorNext === undefined) {
       throw new LexerError(
-        "lexer.unrecognised-operator",
+        "lexer.unrecognized-operator",
         LEXER_ERROR_MESSAGE_UNRECOGNIZED_OPERATOR,
         this.#currentLocation(),
       );
@@ -499,39 +458,38 @@ export class Lexer {
     return null;
   }
 
-  #region(token: TokenWithoutLocation, tokenStart: LexerPosition): Token {
+  #region(
+    token: TokenWithoutLocation,
+    tokenStart: {
+      index: number;
+      line: number;
+      column: number;
+    },
+  ): Token {
     return {
       ...token,
-      location: new SourceRegion(
-        this.#input,
-        tokenStart.index,
-        this.#index - tokenStart.index,
-        tokenStart.line,
-        tokenStart.column,
-        this.#line,
-        this.#column,
-      ),
-    };
-  }
-
-  #position(): LexerPosition {
-    return {
-      index: this.#index,
-      line: this.#line,
-      column: this.#column,
+      location: new SourceRegion({
+        source: this.#input,
+        offset: tokenStart.index,
+        extent: this.#index - tokenStart.index,
+        line: tokenStart.line,
+        column: tokenStart.column,
+        endLine: this.#line,
+        endColumn: this.#column,
+      }),
     };
   }
 
   #currentLocation(): SourceRegion {
-    return new SourceRegion(
-      this.#input,
-      this.#index,
-      0,
-      this.#line,
-      this.#column,
-      this.#line,
-      this.#column,
-    );
+    return new SourceRegion({
+      source: this.#input,
+      offset: this.#index,
+      extent: 0,
+      line: this.#line,
+      column: this.#column,
+      endLine: this.#line,
+      endColumn: this.#column,
+    });
   }
 
   #skipWhitespace(): void {

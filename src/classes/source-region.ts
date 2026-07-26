@@ -1,5 +1,15 @@
 import { NCalcError } from "./ncalc-error";
 
+export type SourceRegionOptions = {
+  source: string;
+  offset: number;
+  extent: number;
+  line: number;
+  column: number;
+  endLine: number;
+  endColumn: number;
+};
+
 export class SourceRegion {
   public readonly source: string;
   public readonly offset: number;
@@ -9,15 +19,15 @@ export class SourceRegion {
   public readonly endLine: number;
   public readonly endColumn: number;
 
-  constructor(
-    source: string,
-    offset: number,
-    extent: number,
-    line: number,
-    column: number,
-    endLine: number,
-    endColumn: number,
-  ) {
+  constructor({
+    source,
+    offset,
+    extent,
+    line,
+    column,
+    endLine,
+    endColumn,
+  }: SourceRegionOptions) {
     this.source = source;
     this.offset = offset;
     this.extent = extent;
@@ -43,16 +53,17 @@ export class SourceRegion {
     const enclosedEndLine = endsWithThis ? this.endLine : other.endLine;
     const enclosedEndColumn = endsWithThis ? this.endColumn : other.endColumn;
 
-    return new SourceRegion(
-      this.source,
-      enclosedOffset,
-      enclosedEndOffset - enclosedOffset,
-      enclosedLine,
-      enclosedColumn,
-      enclosedEndLine,
-      enclosedEndColumn,
-    );
+    return new SourceRegion({
+      source: this.source,
+      offset: enclosedOffset,
+      extent: enclosedEndOffset - enclosedOffset,
+      line: enclosedLine,
+      column: enclosedColumn,
+      endLine: enclosedEndLine,
+      endColumn: enclosedEndColumn,
+    });
   }
+
   get #endOffset(): number {
     return this.offset + this.extent;
   }
