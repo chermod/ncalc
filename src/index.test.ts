@@ -1,6 +1,9 @@
-import { expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 import { example } from ".";
 
-test("example", () => {
-  expect(example(10)).toBe("Hello 10");
+describe("index", () => {
+  it("example", () => {
+    expect.assertions(1);
+    expect(example(10)).toBe("Hello 10");
+  });
 });

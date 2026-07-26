@@ -1,1 +1,1 @@
-export const example = (x: number): string => `Hello ${x}`;
+export const example = (x: number): string => `Hello ${x.toString()}`;

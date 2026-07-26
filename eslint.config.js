@@ -1,16 +1,20 @@
-import js from "@eslint/js";
 import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
+import vitest from "@vitest/eslint-plugin";
 
 export default defineConfig([
   {
-    files: ["**/*.{js,ts}"],
-    extends: [js.configs.recommended, tseslint.configs.recommendedTypeChecked],
+    files: ["**/*.ts"],
+    extends: [tseslint.configs.strictTypeChecked],
     languageOptions: {
       parserOptions: {
         projectService: true,
       },
     },
   },
-  globalIgnores(["tsdown.config.ts", "eslint.config.js"]),
+  {
+    files: ["**/*.test.ts"],
+    extends: [vitest.configs.all],
+  },
+  globalIgnores(["tsdown.config.ts"]),
 ]);
