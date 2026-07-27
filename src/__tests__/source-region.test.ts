@@ -131,3 +131,79 @@ describe("enclose", () => {
     );
   });
 });
+
+describe("encloseAll", () => {
+  it("returns null when no regions are provided", () => {
+    expect.assertions(1);
+
+    expect(SourceRegion.encloseAll()).toBeNull();
+  });
+
+  it("ignores null regions", () => {
+    expect.assertions(1);
+
+    const region = new SourceRegion({
+      source: "a + b",
+      offset: 2,
+      extent: 1,
+      line: 1,
+      column: 3,
+      endLine: 1,
+      endColumn: 4,
+    });
+
+    expect(SourceRegion.encloseAll(null, region, null)).toMatchObject({
+      source: "a + b",
+      offset: 2,
+      extent: 1,
+      line: 1,
+      column: 3,
+      endLine: 1,
+      endColumn: 4,
+    });
+  });
+
+  it("encloses all non-null regions", () => {
+    expect.assertions(1);
+
+    const first = new SourceRegion({
+      source: "a + b + c",
+      offset: 0,
+      extent: 1,
+      line: 1,
+      column: 1,
+      endLine: 1,
+      endColumn: 2,
+    });
+
+    const second = new SourceRegion({
+      source: "a + b + c",
+      offset: 4,
+      extent: 1,
+      line: 1,
+      column: 5,
+      endLine: 1,
+      endColumn: 6,
+    });
+
+    const third = new SourceRegion({
+      source: "a + b + c",
+      offset: 8,
+      extent: 1,
+      line: 1,
+      column: 9,
+      endLine: 1,
+      endColumn: 10,
+    });
+
+    expect(SourceRegion.encloseAll(first, null, second, third)).toMatchObject({
+      source: "a + b + c",
+      offset: 0,
+      extent: 9,
+      line: 1,
+      column: 1,
+      endLine: 1,
+      endColumn: 10,
+    });
+  });
+});

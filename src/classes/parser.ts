@@ -7,73 +7,11 @@ import type {
   UnaryExpression,
   ValueExpression,
 } from "../types/expression";
-import { NCalcError } from "./ncalc-error";
 import { SourceRegion } from "./source-region";
 import { Lexer, type Token, type TokenType } from "./lexer";
-import { LexerError, type LexerErrorCode } from "./lexer-error";
+import { LexerError } from "./lexer-error";
 import { PARSER_ERROR_MESSAGE_EXPECTED_COLON, PARSER_ERROR_MESSAGE_EXPECTED_GROUP_CLOSE, PARSER_ERROR_MESSAGE_EXPECTED_IN_AFTER_NOT, PARSER_ERROR_MESSAGE_FAILED_TO_PARSE_EXPRESSION, PARSER_ERROR_MESSAGE_UNEXPECTED_TOKENS_AFTER_EXPRESSION, parserErrorMessageUnknownTokenType } from "./parser-messages";
-
-export class ParserError extends NCalcError {
-  public readonly errors: readonly ParseIssue[];
-  public readonly incompleteExpression: LogicalExpression | null;
-
-  constructor(
-    message: string,
-    errors: readonly ParseIssue[],
-    incompleteExpression: LogicalExpression | null = null,
-  ) {
-    super(message);
-    this.errors = errors;
-    this.incompleteExpression = incompleteExpression;
-
-    Object.setPrototypeOf(this, ParserError.prototype);
-  }
-}
-
-export class RecoverableParserError extends NCalcError implements ParseIssue {
-  public readonly code: RecoverableParserErrorCode;
-  public readonly token: Token | null;
-
-  constructor(
-    code: RecoverableParserErrorCode,
-    message: string,
-    token: Token | null = null,
-  ) {
-    super(message);
-    Object.setPrototypeOf(this, RecoverableParserError.prototype);
-    this.code = code;
-    this.token = token;
-  }
-
-  get where(): SourceRegion | null {
-    return this.token?.location ?? null;
-  }
-
-  get detailedMessage(): string {
-    if (this.token === null) {
-      return this.message;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    return `${this.message} got ${this.token.type} '${this.token.value}' at line ${this.token.location.line}, column ${this.token.location.column}`;
-  }
-}
-
-export interface ParseIssue {
-  readonly code: ParseIssueCode;
-  readonly message: string;
-  readonly where: SourceRegion | null;
-  readonly detailedMessage: string;
-}
-
-export type RecoverableParserErrorCode =
-  | "parser.expected-colon"
-  | "parser.expected-in-after-not"
-  | "parser.expected-group-close"
-  | "parser.expected-value"
-  | "parser.unknown-token-type";
-
-export type ParseIssueCode = LexerErrorCode | RecoverableParserErrorCode;
+import { type ParseIssue, ParserError, RecoverableParserError } from "./parser-error";
 
 export type ParserOptions = {
   stopOnFirstError?: boolean;
@@ -262,7 +200,7 @@ const createIdentifier = (): ParseRule => ({
       type: "function",
       name: token.value,
       arguments: args,
-      location: encloseLocations(
+      location: SourceRegion.encloseAll(
         token.location,
         openToken.location,
         ...args.map((arg) => arg.location),
@@ -281,7 +219,7 @@ const createGroupOpen = (): ParseRule => ({
       return {
         type: "value",
         value: { type: "list", items: [] },
-        location: encloseLocations(
+        location: SourceRegion.encloseAll(
           openToken.location,
           emptyListCloseToken.location,
         ),
@@ -303,7 +241,7 @@ const createGroupOpen = (): ParseRule => ({
 
       return {
         ...firstExpression,
-        location: encloseLocations(
+        location: SourceRegion.encloseAll(
           openToken.location,
           firstExpression.location,
           closeToken.location,
@@ -334,7 +272,7 @@ const createGroupOpen = (): ParseRule => ({
     return {
       type: "value",
       value: { type: "list", items },
-      location: encloseLocations(
+      location: SourceRegion.encloseAll(
         openToken.location,
         separatorToken.location,
         ...items.map((item) => item.location),
@@ -359,7 +297,7 @@ const createUnary =
       return {
         type: "unary",
         expression: expr,
-        location: encloseLocations(token.location, expr.location),
+        location: SourceRegion.encloseAll(token.location, expr.location),
         operator,
       } satisfies UnaryExpression;
     };
@@ -379,7 +317,7 @@ const createBinary =
         type: "binary",
         left,
         right,
-        location: encloseLocations(left.location, token.location, right.location),
+        location: SourceRegion.encloseAll(left.location, token.location, right.location),
         operator,
       } satisfies BinaryExpression;
     };
@@ -394,7 +332,7 @@ const createNot = (): ParseRule => ({
         operator: "not-in",
         left,
         right,
-        location: encloseLocations(
+        location: SourceRegion.encloseAll(
           left.location,
           notToken.location,
           inToken.location,
@@ -411,7 +349,7 @@ const createNot = (): ParseRule => ({
         operator: "not-like",
         left,
         right,
-        location: encloseLocations(
+        location: SourceRegion.encloseAll(
           left.location,
           notToken.location,
           likeToken.location,
@@ -455,7 +393,7 @@ const createTernary = (): ParseRule => ({
       left,
       middle,
       right,
-      location: encloseLocations(
+      location: SourceRegion.encloseAll(
         left.location,
         ternaryToken.location,
         middle.location,
@@ -653,19 +591,3 @@ const nextPrecedence = (lexer: Lexer): number => {
   return rules[lookahead.type].precedence;
 };
 
-const encloseLocations = (
-  ...locations: (SourceRegion | null)[]
-): SourceRegion | null => {
-  let enclosedLocation: SourceRegion | null = null;
-
-  for (const location of locations) {
-    if (location === null) {
-      continue;
-    }
-
-    enclosedLocation =
-      enclosedLocation === null ? location : enclosedLocation.enclose(location);
-  }
-
-  return enclosedLocation;
-};
