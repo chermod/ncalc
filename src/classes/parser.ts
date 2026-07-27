@@ -341,7 +341,7 @@ const createNot = (): ParseRule => ({
       } satisfies BinaryExpression;
     }
 
-    const likeToken = match(lexer, "in");
+    const likeToken = match(lexer, "like");
     if (likeToken !== null) {
       const right = expression(lexer, Precedence.Comparison);
       return {
