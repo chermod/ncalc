@@ -1,6 +1,1038 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`parser > binary operator 1`] = `
+exports[`progressive error messages > throws parser errors 1`] = `[Error: Failed to parse expression]`;
+
+exports[`valid expressions > parses !!false 1`] = `
+{
+  "expression": {
+    "expression": {
+      "location": SourceRegion {
+        "column": 3,
+        "endColumn": 8,
+        "endLine": 1,
+        "extent": 5,
+        "line": 1,
+        "offset": 2,
+        "source": "!!false",
+      },
+      "type": "value",
+      "value": {
+        "type": "constant",
+        "value": {
+          "type": "boolean",
+          "value": "false",
+        },
+      },
+    },
+    "location": SourceRegion {
+      "column": 2,
+      "endColumn": 8,
+      "endLine": 1,
+      "extent": 6,
+      "line": 1,
+      "offset": 1,
+      "source": "!!false",
+    },
+    "operator": "not",
+    "type": "unary",
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 8,
+    "endLine": 1,
+    "extent": 7,
+    "line": 1,
+    "offset": 0,
+    "source": "!!false",
+  },
+  "operator": "not",
+  "type": "unary",
+}
+`;
+
+exports[`valid expressions > parses !false 1`] = `
+{
+  "expression": {
+    "location": SourceRegion {
+      "column": 2,
+      "endColumn": 7,
+      "endLine": 1,
+      "extent": 5,
+      "line": 1,
+      "offset": 1,
+      "source": "!false",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "boolean",
+        "value": "false",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 7,
+    "endLine": 1,
+    "extent": 6,
+    "line": 1,
+    "offset": 0,
+    "source": "!false",
+  },
+  "operator": "not",
+  "type": "unary",
+}
+`;
+
+exports[`valid expressions > parses #11/06/2000# 1`] = `
+{
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 13,
+    "endLine": 1,
+    "extent": 12,
+    "line": 1,
+    "offset": 0,
+    "source": "#11/06/2000#",
+  },
+  "type": "value",
+  "value": {
+    "type": "constant",
+    "value": {
+      "type": "date",
+      "value": "11/06/2000",
+    },
+  },
+}
+`;
+
+exports[`valid expressions > parses () 1`] = `
+{
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 3,
+    "endLine": 1,
+    "extent": 2,
+    "line": 1,
+    "offset": 0,
+    "source": "()",
+  },
+  "type": "value",
+  "value": {
+    "items": [],
+    "type": "list",
+  },
+}
+`;
+
+exports[`valid expressions > parses (1,) 1`] = `
+{
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 5,
+    "endLine": 1,
+    "extent": 4,
+    "line": 1,
+    "offset": 0,
+    "source": "(1,)",
+  },
+  "type": "value",
+  "value": {
+    "items": [
+      {
+        "location": SourceRegion {
+          "column": 2,
+          "endColumn": 3,
+          "endLine": 1,
+          "extent": 1,
+          "line": 1,
+          "offset": 1,
+          "source": "(1,)",
+        },
+        "type": "value",
+        "value": {
+          "type": "constant",
+          "value": {
+            "type": "number",
+            "value": "1",
+          },
+        },
+      },
+    ],
+    "type": "list",
+  },
+}
+`;
+
+exports[`valid expressions > parses (1,2) 1`] = `
+{
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "(1,2)",
+  },
+  "type": "value",
+  "value": {
+    "items": [
+      {
+        "location": SourceRegion {
+          "column": 2,
+          "endColumn": 3,
+          "endLine": 1,
+          "extent": 1,
+          "line": 1,
+          "offset": 1,
+          "source": "(1,2)",
+        },
+        "type": "value",
+        "value": {
+          "type": "constant",
+          "value": {
+            "type": "number",
+            "value": "1",
+          },
+        },
+      },
+      {
+        "location": SourceRegion {
+          "column": 4,
+          "endColumn": 5,
+          "endLine": 1,
+          "extent": 1,
+          "line": 1,
+          "offset": 3,
+          "source": "(1,2)",
+        },
+        "type": "value",
+        "value": {
+          "type": "constant",
+          "value": {
+            "type": "number",
+            "value": "2",
+          },
+        },
+      },
+    ],
+    "type": "list",
+  },
+}
+`;
+
+exports[`valid expressions > parses [1] < #11/06/2000# 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 4,
+      "endLine": 1,
+      "extent": 3,
+      "line": 1,
+      "offset": 0,
+      "source": "[1] < #11/06/2000#",
+    },
+    "type": "value",
+    "value": {
+      "name": "1",
+      "type": "parameter",
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 19,
+    "endLine": 1,
+    "extent": 18,
+    "line": 1,
+    "offset": 0,
+    "source": "[1] < #11/06/2000#",
+  },
+  "operator": "less-than",
+  "right": {
+    "location": SourceRegion {
+      "column": 7,
+      "endColumn": 19,
+      "endLine": 1,
+      "extent": 12,
+      "line": 1,
+      "offset": 6,
+      "source": "[1] < #11/06/2000#",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "date",
+        "value": "11/06/2000",
+      },
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses ~~~~1 1`] = `
+{
+  "expression": {
+    "expression": {
+      "expression": {
+        "expression": {
+          "location": SourceRegion {
+            "column": 5,
+            "endColumn": 6,
+            "endLine": 1,
+            "extent": 1,
+            "line": 1,
+            "offset": 4,
+            "source": "~~~~1",
+          },
+          "type": "value",
+          "value": {
+            "type": "constant",
+            "value": {
+              "type": "number",
+              "value": "1",
+            },
+          },
+        },
+        "location": SourceRegion {
+          "column": 4,
+          "endColumn": 6,
+          "endLine": 1,
+          "extent": 2,
+          "line": 1,
+          "offset": 3,
+          "source": "~~~~1",
+        },
+        "operator": "bit-complement",
+        "type": "unary",
+      },
+      "location": SourceRegion {
+        "column": 3,
+        "endColumn": 6,
+        "endLine": 1,
+        "extent": 3,
+        "line": 1,
+        "offset": 2,
+        "source": "~~~~1",
+      },
+      "operator": "bit-complement",
+      "type": "unary",
+    },
+    "location": SourceRegion {
+      "column": 2,
+      "endColumn": 6,
+      "endLine": 1,
+      "extent": 4,
+      "line": 1,
+      "offset": 1,
+      "source": "~~~~1",
+    },
+    "operator": "bit-complement",
+    "type": "unary",
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "~~~~1",
+  },
+  "operator": "bit-complement",
+  "type": "unary",
+}
+`;
+
+exports[`valid expressions > parses ~1 1`] = `
+{
+  "expression": {
+    "location": SourceRegion {
+      "column": 2,
+      "endColumn": 3,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 1,
+      "source": "~1",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "1",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 3,
+    "endLine": 1,
+    "extent": 2,
+    "line": 1,
+    "offset": 0,
+    "source": "~1",
+  },
+  "operator": "bit-complement",
+  "type": "unary",
+}
+`;
+
+exports[`valid expressions > parses ---1 1`] = `
+{
+  "expression": {
+    "expression": {
+      "expression": {
+        "location": SourceRegion {
+          "column": 4,
+          "endColumn": 5,
+          "endLine": 1,
+          "extent": 1,
+          "line": 1,
+          "offset": 3,
+          "source": "---1",
+        },
+        "type": "value",
+        "value": {
+          "type": "constant",
+          "value": {
+            "type": "number",
+            "value": "1",
+          },
+        },
+      },
+      "location": SourceRegion {
+        "column": 3,
+        "endColumn": 5,
+        "endLine": 1,
+        "extent": 2,
+        "line": 1,
+        "offset": 2,
+        "source": "---1",
+      },
+      "operator": "negate",
+      "type": "unary",
+    },
+    "location": SourceRegion {
+      "column": 2,
+      "endColumn": 5,
+      "endLine": 1,
+      "extent": 3,
+      "line": 1,
+      "offset": 1,
+      "source": "---1",
+    },
+    "operator": "negate",
+    "type": "unary",
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 5,
+    "endLine": 1,
+    "extent": 4,
+    "line": 1,
+    "offset": 0,
+    "source": "---1",
+  },
+  "operator": "negate",
+  "type": "unary",
+}
+`;
+
+exports[`valid expressions > parses -1 1`] = `
+{
+  "expression": {
+    "location": SourceRegion {
+      "column": 2,
+      "endColumn": 3,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 1,
+      "source": "-1",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "1",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 3,
+    "endLine": 1,
+    "extent": 2,
+    "line": 1,
+    "offset": 0,
+    "source": "-1",
+  },
+  "operator": "negate",
+  "type": "unary",
+}
+`;
+
+exports[`valid expressions > parses -2 1`] = `
+{
+  "expression": {
+    "location": SourceRegion {
+      "column": 2,
+      "endColumn": 3,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 1,
+      "source": "-2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "2",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 3,
+    "endLine": 1,
+    "extent": 2,
+    "line": 1,
+    "offset": 0,
+    "source": "-2",
+  },
+  "operator": "negate",
+  "type": "unary",
+}
+`;
+
+exports[`valid expressions > parses 1  in (1,) 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1  in (1,)",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "1",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 11,
+    "endLine": 1,
+    "extent": 10,
+    "line": 1,
+    "offset": 0,
+    "source": "1  in (1,)",
+  },
+  "operator": "in",
+  "right": {
+    "location": SourceRegion {
+      "column": 7,
+      "endColumn": 11,
+      "endLine": 1,
+      "extent": 4,
+      "line": 1,
+      "offset": 6,
+      "source": "1  in (1,)",
+    },
+    "type": "value",
+    "value": {
+      "items": [
+        {
+          "location": SourceRegion {
+            "column": 8,
+            "endColumn": 9,
+            "endLine": 1,
+            "extent": 1,
+            "line": 1,
+            "offset": 7,
+            "source": "1  in (1,)",
+          },
+          "type": "value",
+          "value": {
+            "type": "constant",
+            "value": {
+              "type": "number",
+              "value": "1",
+            },
+          },
+        },
+      ],
+      "type": "list",
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses 1 != 2 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 != 2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "1",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 7,
+    "endLine": 1,
+    "extent": 6,
+    "line": 1,
+    "offset": 0,
+    "source": "1 != 2",
+  },
+  "operator": "not-equals",
+  "right": {
+    "location": SourceRegion {
+      "column": 6,
+      "endColumn": 7,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 5,
+      "source": "1 != 2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "2",
+      },
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses 1 % 2 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 % 2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "1",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "1 % 2",
+  },
+  "operator": "modulus",
+  "right": {
+    "location": SourceRegion {
+      "column": 5,
+      "endColumn": 6,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 4,
+      "source": "1 % 2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "2",
+      },
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses 1 & 2 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 & 2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "1",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "1 & 2",
+  },
+  "operator": "bit-and",
+  "right": {
+    "location": SourceRegion {
+      "column": 5,
+      "endColumn": 6,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 4,
+      "source": "1 & 2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "2",
+      },
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses 1 * 2 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 * 2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "1",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "1 * 2",
+  },
+  "operator": "multiplication",
+  "right": {
+    "location": SourceRegion {
+      "column": 5,
+      "endColumn": 6,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 4,
+      "source": "1 * 2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "2",
+      },
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses 1 * MyParam * {MyParam} * [MyParam] * (1,2) 1`] = `
+{
+  "left": {
+    "left": {
+      "left": {
+        "left": {
+          "location": SourceRegion {
+            "column": 1,
+            "endColumn": 2,
+            "endLine": 1,
+            "extent": 1,
+            "line": 1,
+            "offset": 0,
+            "source": "1 * MyParam * {MyParam} * [MyParam] * (1,2)",
+          },
+          "type": "value",
+          "value": {
+            "type": "constant",
+            "value": {
+              "type": "number",
+              "value": "1",
+            },
+          },
+        },
+        "location": SourceRegion {
+          "column": 1,
+          "endColumn": 12,
+          "endLine": 1,
+          "extent": 11,
+          "line": 1,
+          "offset": 0,
+          "source": "1 * MyParam * {MyParam} * [MyParam] * (1,2)",
+        },
+        "operator": "multiplication",
+        "right": {
+          "location": SourceRegion {
+            "column": 5,
+            "endColumn": 12,
+            "endLine": 1,
+            "extent": 7,
+            "line": 1,
+            "offset": 4,
+            "source": "1 * MyParam * {MyParam} * [MyParam] * (1,2)",
+          },
+          "type": "value",
+          "value": {
+            "name": "MyParam",
+            "type": "parameter",
+          },
+        },
+        "type": "binary",
+      },
+      "location": SourceRegion {
+        "column": 1,
+        "endColumn": 24,
+        "endLine": 1,
+        "extent": 23,
+        "line": 1,
+        "offset": 0,
+        "source": "1 * MyParam * {MyParam} * [MyParam] * (1,2)",
+      },
+      "operator": "multiplication",
+      "right": {
+        "location": SourceRegion {
+          "column": 15,
+          "endColumn": 24,
+          "endLine": 1,
+          "extent": 9,
+          "line": 1,
+          "offset": 14,
+          "source": "1 * MyParam * {MyParam} * [MyParam] * (1,2)",
+        },
+        "type": "value",
+        "value": {
+          "name": "MyParam",
+          "type": "parameter",
+        },
+      },
+      "type": "binary",
+    },
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 36,
+      "endLine": 1,
+      "extent": 35,
+      "line": 1,
+      "offset": 0,
+      "source": "1 * MyParam * {MyParam} * [MyParam] * (1,2)",
+    },
+    "operator": "multiplication",
+    "right": {
+      "location": SourceRegion {
+        "column": 27,
+        "endColumn": 36,
+        "endLine": 1,
+        "extent": 9,
+        "line": 1,
+        "offset": 26,
+        "source": "1 * MyParam * {MyParam} * [MyParam] * (1,2)",
+      },
+      "type": "value",
+      "value": {
+        "name": "MyParam",
+        "type": "parameter",
+      },
+    },
+    "type": "binary",
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 44,
+    "endLine": 1,
+    "extent": 43,
+    "line": 1,
+    "offset": 0,
+    "source": "1 * MyParam * {MyParam} * [MyParam] * (1,2)",
+  },
+  "operator": "multiplication",
+  "right": {
+    "location": SourceRegion {
+      "column": 39,
+      "endColumn": 44,
+      "endLine": 1,
+      "extent": 5,
+      "line": 1,
+      "offset": 38,
+      "source": "1 * MyParam * {MyParam} * [MyParam] * (1,2)",
+    },
+    "type": "value",
+    "value": {
+      "items": [
+        {
+          "location": SourceRegion {
+            "column": 40,
+            "endColumn": 41,
+            "endLine": 1,
+            "extent": 1,
+            "line": 1,
+            "offset": 39,
+            "source": "1 * MyParam * {MyParam} * [MyParam] * (1,2)",
+          },
+          "type": "value",
+          "value": {
+            "type": "constant",
+            "value": {
+              "type": "number",
+              "value": "1",
+            },
+          },
+        },
+        {
+          "location": SourceRegion {
+            "column": 42,
+            "endColumn": 43,
+            "endLine": 1,
+            "extent": 1,
+            "line": 1,
+            "offset": 41,
+            "source": "1 * MyParam * {MyParam} * [MyParam] * (1,2)",
+          },
+          "type": "value",
+          "value": {
+            "type": "constant",
+            "value": {
+              "type": "number",
+              "value": "2",
+            },
+          },
+        },
+      ],
+      "type": "list",
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses 1 ** 2 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 ** 2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "1",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 7,
+    "endLine": 1,
+    "extent": 6,
+    "line": 1,
+    "offset": 0,
+    "source": "1 ** 2",
+  },
+  "operator": "exponentiation",
+  "right": {
+    "location": SourceRegion {
+      "column": 6,
+      "endColumn": 7,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 5,
+      "source": "1 ** 2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "2",
+      },
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses 1 + 2 1`] = `
 {
   "left": {
     "location": SourceRegion {
@@ -54,162 +1086,18 @@ exports[`parser > binary operator 1`] = `
 }
 `;
 
-exports[`parser > complex !!false > !!false 1`] = `
-{
-  "expression": {
-    "expression": {
-      "type": "value",
-      "value": {
-        "type": "constant",
-        "value": {
-          "type": "boolean",
-          "value": "false",
-        },
-      },
-    },
-    "operator": "not",
-    "type": "unary",
-  },
-  "operator": "not",
-  "type": "unary",
-}
-`;
-
-exports[`parser > complex !false > !false 1`] = `
-{
-  "expression": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "boolean",
-        "value": "false",
-      },
-    },
-  },
-  "operator": "not",
-  "type": "unary",
-}
-`;
-
-exports[`parser > complex () > () 1`] = `
-{
-  "type": "value",
-  "value": {
-    "items": [],
-    "type": "list",
-  },
-}
-`;
-
-exports[`parser > complex (1,) > (1,) 1`] = `
-{
-  "type": "value",
-  "value": {
-    "items": [
-      {
-        "type": "value",
-        "value": {
-          "type": "constant",
-          "value": {
-            "type": "number",
-            "value": "1",
-          },
-        },
-      },
-    ],
-    "type": "list",
-  },
-}
-`;
-
-exports[`parser > complex (1,2) > (1,2) 1`] = `
-{
-  "type": "value",
-  "value": {
-    "items": [
-      {
-        "type": "value",
-        "value": {
-          "type": "constant",
-          "value": {
-            "type": "number",
-            "value": "1",
-          },
-        },
-      },
-      {
-        "type": "value",
-        "value": {
-          "type": "constant",
-          "value": {
-            "type": "number",
-            "value": "2",
-          },
-        },
-      },
-    ],
-    "type": "list",
-  },
-}
-`;
-
-exports[`parser > complex [1] < #11/06/2000# > [1] < #11/06/2000# 1`] = `
+exports[`valid expressions > parses 1 / 2 1`] = `
 {
   "left": {
-    "type": "value",
-    "value": {
-      "name": "1",
-      "type": "parameter",
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 / 2",
     },
-  },
-  "operator": "less-than",
-  "right": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "date",
-        "value": "11/06/2000",
-      },
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > complex ~~~~1 > ~~~~1 1`] = `
-{
-  "expression": {
-    "expression": {
-      "expression": {
-        "expression": {
-          "type": "value",
-          "value": {
-            "type": "constant",
-            "value": {
-              "type": "number",
-              "value": "1",
-            },
-          },
-        },
-        "operator": "bit-complement",
-        "type": "unary",
-      },
-      "operator": "bit-complement",
-      "type": "unary",
-    },
-    "operator": "bit-complement",
-    "type": "unary",
-  },
-  "operator": "bit-complement",
-  "type": "unary",
-}
-`;
-
-exports[`parser > complex ~1 > ~1 1`] = `
-{
-  "expression": {
     "type": "value",
     "value": {
       "type": "constant",
@@ -219,342 +1107,26 @@ exports[`parser > complex ~1 > ~1 1`] = `
       },
     },
   },
-  "operator": "bit-complement",
-  "type": "unary",
-}
-`;
-
-exports[`parser > complex ---1 > ---1 1`] = `
-{
-  "expression": {
-    "expression": {
-      "expression": {
-        "type": "value",
-        "value": {
-          "type": "constant",
-          "value": {
-            "type": "number",
-            "value": "1",
-          },
-        },
-      },
-      "operator": "negate",
-      "type": "unary",
-    },
-    "operator": "negate",
-    "type": "unary",
-  },
-  "operator": "negate",
-  "type": "unary",
-}
-`;
-
-exports[`parser > complex -1 > -1 1`] = `
-{
-  "expression": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "1",
-      },
-    },
-  },
-  "operator": "negate",
-  "type": "unary",
-}
-`;
-
-exports[`parser > complex 1  in (1,) > 1  in (1,) 1`] = `
-{
-  "left": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "1",
-      },
-    },
-  },
-  "operator": "in",
-  "right": {
-    "type": "value",
-    "value": {
-      "items": [
-        {
-          "type": "value",
-          "value": {
-            "type": "constant",
-            "value": {
-              "type": "number",
-              "value": "1",
-            },
-          },
-        },
-      ],
-      "type": "list",
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > complex 1 != 2 > 1 != 2 1`] = `
-{
-  "left": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "1",
-      },
-    },
-  },
-  "operator": "not-equals",
-  "right": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "2",
-      },
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > complex 1 % 2 > 1 % 2 1`] = `
-{
-  "left": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "1",
-      },
-    },
-  },
-  "operator": "modulus",
-  "right": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "2",
-      },
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > complex 1 & 2 > 1 & 2 1`] = `
-{
-  "left": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "1",
-      },
-    },
-  },
-  "operator": "bit-and",
-  "right": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "2",
-      },
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > complex 1 * 2 > 1 * 2 1`] = `
-{
-  "left": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "1",
-      },
-    },
-  },
-  "operator": "multiplication",
-  "right": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "2",
-      },
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > complex 1 * MyParam * {MyParam} * [MyParam] * (1,2) > 1 * MyParam * {MyParam} * [MyParam] * (1,2) 1`] = `
-{
-  "left": {
-    "left": {
-      "left": {
-        "left": {
-          "type": "value",
-          "value": {
-            "type": "constant",
-            "value": {
-              "type": "number",
-              "value": "1",
-            },
-          },
-        },
-        "operator": "multiplication",
-        "right": {
-          "type": "value",
-          "value": {
-            "name": "MyParam",
-            "type": "parameter",
-          },
-        },
-        "type": "binary",
-      },
-      "operator": "multiplication",
-      "right": {
-        "type": "value",
-        "value": {
-          "name": "MyParam",
-          "type": "parameter",
-        },
-      },
-      "type": "binary",
-    },
-    "operator": "multiplication",
-    "right": {
-      "type": "value",
-      "value": {
-        "name": "MyParam",
-        "type": "parameter",
-      },
-    },
-    "type": "binary",
-  },
-  "operator": "multiplication",
-  "right": {
-    "type": "value",
-    "value": {
-      "items": [
-        {
-          "type": "value",
-          "value": {
-            "type": "constant",
-            "value": {
-              "type": "number",
-              "value": "1",
-            },
-          },
-        },
-        {
-          "type": "value",
-          "value": {
-            "type": "constant",
-            "value": {
-              "type": "number",
-              "value": "2",
-            },
-          },
-        },
-      ],
-      "type": "list",
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > complex 1 ** 2 > 1 ** 2 1`] = `
-{
-  "left": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "1",
-      },
-    },
-  },
-  "operator": "exponentiation",
-  "right": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "2",
-      },
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > complex 1 + 2 > 1 + 2 1`] = `
-{
-  "left": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "1",
-      },
-    },
-  },
-  "operator": "addition",
-  "right": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "2",
-      },
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > complex 1 / 2 > 1 / 2 1`] = `
-{
-  "left": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "number",
-        "value": "1",
-      },
-    },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "1 / 2",
   },
   "operator": "division",
   "right": {
+    "location": SourceRegion {
+      "column": 5,
+      "endColumn": 6,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 4,
+      "source": "1 / 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -568,9 +1140,18 @@ exports[`parser > complex 1 / 2 > 1 / 2 1`] = `
 }
 `;
 
-exports[`parser > complex 1 < 2 > 1 < 2 1`] = `
+exports[`valid expressions > parses 1 < 2 1`] = `
 {
   "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 < 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -579,9 +1160,27 @@ exports[`parser > complex 1 < 2 > 1 < 2 1`] = `
         "value": "1",
       },
     },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "1 < 2",
   },
   "operator": "less-than",
   "right": {
+    "location": SourceRegion {
+      "column": 5,
+      "endColumn": 6,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 4,
+      "source": "1 < 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -595,9 +1194,18 @@ exports[`parser > complex 1 < 2 > 1 < 2 1`] = `
 }
 `;
 
-exports[`parser > complex 1 << 2 > 1 << 2 1`] = `
+exports[`valid expressions > parses 1 << 2 1`] = `
 {
   "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 << 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -606,9 +1214,27 @@ exports[`parser > complex 1 << 2 > 1 << 2 1`] = `
         "value": "1",
       },
     },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 7,
+    "endLine": 1,
+    "extent": 6,
+    "line": 1,
+    "offset": 0,
+    "source": "1 << 2",
   },
   "operator": "bit-left-shift",
   "right": {
+    "location": SourceRegion {
+      "column": 6,
+      "endColumn": 7,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 5,
+      "source": "1 << 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -622,9 +1248,18 @@ exports[`parser > complex 1 << 2 > 1 << 2 1`] = `
 }
 `;
 
-exports[`parser > complex 1 <= 2 > 1 <= 2 1`] = `
+exports[`valid expressions > parses 1 <= 2 1`] = `
 {
   "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 <= 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -633,9 +1268,27 @@ exports[`parser > complex 1 <= 2 > 1 <= 2 1`] = `
         "value": "1",
       },
     },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 7,
+    "endLine": 1,
+    "extent": 6,
+    "line": 1,
+    "offset": 0,
+    "source": "1 <= 2",
   },
   "operator": "less-than-equal",
   "right": {
+    "location": SourceRegion {
+      "column": 6,
+      "endColumn": 7,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 5,
+      "source": "1 <= 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -649,9 +1302,18 @@ exports[`parser > complex 1 <= 2 > 1 <= 2 1`] = `
 }
 `;
 
-exports[`parser > complex 1 <> 2 > 1 <> 2 1`] = `
+exports[`valid expressions > parses 1 <> 2 1`] = `
 {
   "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 <> 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -660,9 +1322,27 @@ exports[`parser > complex 1 <> 2 > 1 <> 2 1`] = `
         "value": "1",
       },
     },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 7,
+    "endLine": 1,
+    "extent": 6,
+    "line": 1,
+    "offset": 0,
+    "source": "1 <> 2",
   },
   "operator": "not-equals",
   "right": {
+    "location": SourceRegion {
+      "column": 6,
+      "endColumn": 7,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 5,
+      "source": "1 <> 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -676,9 +1356,18 @@ exports[`parser > complex 1 <> 2 > 1 <> 2 1`] = `
 }
 `;
 
-exports[`parser > complex 1 = 2 > 1 = 2 1`] = `
+exports[`valid expressions > parses 1 = 2 1`] = `
 {
   "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 = 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -687,9 +1376,27 @@ exports[`parser > complex 1 = 2 > 1 = 2 1`] = `
         "value": "1",
       },
     },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "1 = 2",
   },
   "operator": "equals",
   "right": {
+    "location": SourceRegion {
+      "column": 5,
+      "endColumn": 6,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 4,
+      "source": "1 = 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -703,9 +1410,18 @@ exports[`parser > complex 1 = 2 > 1 = 2 1`] = `
 }
 `;
 
-exports[`parser > complex 1 > 2 > 1 > 2 1`] = `
+exports[`valid expressions > parses 1 > 2 1`] = `
 {
   "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 > 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -714,9 +1430,27 @@ exports[`parser > complex 1 > 2 > 1 > 2 1`] = `
         "value": "1",
       },
     },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "1 > 2",
   },
   "operator": "greater-than",
   "right": {
+    "location": SourceRegion {
+      "column": 5,
+      "endColumn": 6,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 4,
+      "source": "1 > 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -730,9 +1464,18 @@ exports[`parser > complex 1 > 2 > 1 > 2 1`] = `
 }
 `;
 
-exports[`parser > complex 1 >= 2 > 1 >= 2 1`] = `
+exports[`valid expressions > parses 1 >= 2 1`] = `
 {
   "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 >= 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -741,9 +1484,27 @@ exports[`parser > complex 1 >= 2 > 1 >= 2 1`] = `
         "value": "1",
       },
     },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 7,
+    "endLine": 1,
+    "extent": 6,
+    "line": 1,
+    "offset": 0,
+    "source": "1 >= 2",
   },
   "operator": "greater-than-equal",
   "right": {
+    "location": SourceRegion {
+      "column": 6,
+      "endColumn": 7,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 5,
+      "source": "1 >= 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -757,9 +1518,18 @@ exports[`parser > complex 1 >= 2 > 1 >= 2 1`] = `
 }
 `;
 
-exports[`parser > complex 1 >> 2 > 1 >> 2 1`] = `
+exports[`valid expressions > parses 1 >> 2 1`] = `
 {
   "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 >> 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -768,9 +1538,27 @@ exports[`parser > complex 1 >> 2 > 1 >> 2 1`] = `
         "value": "1",
       },
     },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 7,
+    "endLine": 1,
+    "extent": 6,
+    "line": 1,
+    "offset": 0,
+    "source": "1 >> 2",
   },
   "operator": "bit-right-shift",
   "right": {
+    "location": SourceRegion {
+      "column": 6,
+      "endColumn": 7,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 5,
+      "source": "1 >> 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -784,9 +1572,18 @@ exports[`parser > complex 1 >> 2 > 1 >> 2 1`] = `
 }
 `;
 
-exports[`parser > complex 1 ^ 2 > 1 ^ 2 1`] = `
+exports[`valid expressions > parses 1 ^ 2 1`] = `
 {
   "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 ^ 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -795,9 +1592,27 @@ exports[`parser > complex 1 ^ 2 > 1 ^ 2 1`] = `
         "value": "1",
       },
     },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "1 ^ 2",
   },
   "operator": "bit-xor",
   "right": {
+    "location": SourceRegion {
+      "column": 5,
+      "endColumn": 6,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 4,
+      "source": "1 ^ 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -811,9 +1626,18 @@ exports[`parser > complex 1 ^ 2 > 1 ^ 2 1`] = `
 }
 `;
 
-exports[`parser > complex 1 | 2 > 1 | 2 1`] = `
+exports[`valid expressions > parses 1 | 2 1`] = `
 {
   "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 | 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -822,9 +1646,27 @@ exports[`parser > complex 1 | 2 > 1 | 2 1`] = `
         "value": "1",
       },
     },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "1 | 2",
   },
   "operator": "bit-or",
   "right": {
+    "location": SourceRegion {
+      "column": 5,
+      "endColumn": 6,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 4,
+      "source": "1 | 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -838,9 +1680,18 @@ exports[`parser > complex 1 | 2 > 1 | 2 1`] = `
 }
 `;
 
-exports[`parser > complex 1 - 2 > 1 - 2 1`] = `
+exports[`valid expressions > parses 1 - 2 1`] = `
 {
   "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 - 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -849,9 +1700,27 @@ exports[`parser > complex 1 - 2 > 1 - 2 1`] = `
         "value": "1",
       },
     },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "1 - 2",
   },
   "operator": "subtraction",
   "right": {
+    "location": SourceRegion {
+      "column": 5,
+      "endColumn": 6,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 4,
+      "source": "1 - 2",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -865,9 +1734,18 @@ exports[`parser > complex 1 - 2 > 1 - 2 1`] = `
 }
 `;
 
-exports[`parser > complex 1 not in (1,) > 1 not in (1,) 1`] = `
+exports[`valid expressions > parses 1 not in (1,) 1`] = `
 {
   "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1 not in (1,)",
+    },
     "type": "value",
     "value": {
       "type": "constant",
@@ -877,12 +1755,39 @@ exports[`parser > complex 1 not in (1,) > 1 not in (1,) 1`] = `
       },
     },
   },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 14,
+    "endLine": 1,
+    "extent": 13,
+    "line": 1,
+    "offset": 0,
+    "source": "1 not in (1,)",
+  },
   "operator": "not-in",
   "right": {
+    "location": SourceRegion {
+      "column": 10,
+      "endColumn": 14,
+      "endLine": 1,
+      "extent": 4,
+      "line": 1,
+      "offset": 9,
+      "source": "1 not in (1,)",
+    },
     "type": "value",
     "value": {
       "items": [
         {
+          "location": SourceRegion {
+            "column": 11,
+            "endColumn": 12,
+            "endLine": 1,
+            "extent": 1,
+            "line": 1,
+            "offset": 10,
+            "source": "1 not in (1,)",
+          },
           "type": "value",
           "value": {
             "type": "constant",
@@ -900,18 +1805,90 @@ exports[`parser > complex 1 not in (1,) > 1 not in (1,) 1`] = `
 }
 `;
 
-exports[`parser > complex Fun() > Fun() 1`] = `
+exports[`valid expressions > parses 1+2 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "1+2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "1",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 4,
+    "endLine": 1,
+    "extent": 3,
+    "line": 1,
+    "offset": 0,
+    "source": "1+2",
+  },
+  "operator": "addition",
+  "right": {
+    "location": SourceRegion {
+      "column": 3,
+      "endColumn": 4,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 2,
+      "source": "1+2",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "number",
+        "value": "2",
+      },
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses Fun() 1`] = `
 {
   "arguments": [],
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 6,
+    "endLine": 1,
+    "extent": 5,
+    "line": 1,
+    "offset": 0,
+    "source": "Fun()",
+  },
   "name": "Fun",
   "type": "function",
 }
 `;
 
-exports[`parser > complex MyFunction(1,2) > MyFunction(1,2) 1`] = `
+exports[`valid expressions > parses MyFunction(1,2) 1`] = `
 {
   "arguments": [
     {
+      "location": SourceRegion {
+        "column": 12,
+        "endColumn": 13,
+        "endLine": 1,
+        "extent": 1,
+        "line": 1,
+        "offset": 11,
+        "source": "MyFunction(1,2)",
+      },
       "type": "value",
       "value": {
         "type": "constant",
@@ -922,6 +1899,15 @@ exports[`parser > complex MyFunction(1,2) > MyFunction(1,2) 1`] = `
       },
     },
     {
+      "location": SourceRegion {
+        "column": 14,
+        "endColumn": 15,
+        "endLine": 1,
+        "extent": 1,
+        "line": 1,
+        "offset": 13,
+        "source": "MyFunction(1,2)",
+      },
       "type": "value",
       "value": {
         "type": "constant",
@@ -932,122 +1918,21 @@ exports[`parser > complex MyFunction(1,2) > MyFunction(1,2) 1`] = `
       },
     },
   ],
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 16,
+    "endLine": 1,
+    "extent": 15,
+    "line": 1,
+    "offset": 0,
+    "source": "MyFunction(1,2)",
+  },
   "name": "MyFunction",
   "type": "function",
 }
 `;
 
-exports[`parser > complex true && false > true && false 1`] = `
-{
-  "left": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "boolean",
-        "value": "true",
-      },
-    },
-  },
-  "operator": "and",
-  "right": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "boolean",
-        "value": "false",
-      },
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > complex true || false > true || false 1`] = `
-{
-  "left": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "boolean",
-        "value": "true",
-      },
-    },
-  },
-  "operator": "or",
-  "right": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "boolean",
-        "value": "false",
-      },
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > complex true and false > true and false 1`] = `
-{
-  "left": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "boolean",
-        "value": "true",
-      },
-    },
-  },
-  "operator": "and",
-  "right": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "boolean",
-        "value": "false",
-      },
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > complex true or false > true or false 1`] = `
-{
-  "left": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "boolean",
-        "value": "true",
-      },
-    },
-  },
-  "operator": "or",
-  "right": {
-    "type": "value",
-    "value": {
-      "type": "constant",
-      "value": {
-        "type": "boolean",
-        "value": "false",
-      },
-    },
-  },
-  "type": "binary",
-}
-`;
-
-exports[`parser > errors 1`] = `[Error: Failed to parse expression]`;
-
-exports[`parser > function expression 1`] = `
+exports[`valid expressions > parses MyFunctionName(1,2,false) 1`] = `
 {
   "arguments": [
     {
@@ -1122,7 +2007,7 @@ exports[`parser > function expression 1`] = `
 }
 `;
 
-exports[`parser > ternary operator 1`] = `
+exports[`valid expressions > parses false?1:2 1`] = `
 {
   "left": {
     "location": SourceRegion {
@@ -1132,7 +2017,7 @@ exports[`parser > ternary operator 1`] = `
       "extent": 5,
       "line": 1,
       "offset": 0,
-      "source": "false ? 1 : 2",
+      "source": "false?1:2",
     },
     "type": "value",
     "value": {
@@ -1145,22 +2030,22 @@ exports[`parser > ternary operator 1`] = `
   },
   "location": SourceRegion {
     "column": 1,
-    "endColumn": 14,
+    "endColumn": 10,
     "endLine": 1,
-    "extent": 13,
+    "extent": 9,
     "line": 1,
     "offset": 0,
-    "source": "false ? 1 : 2",
+    "source": "false?1:2",
   },
   "middle": {
     "location": SourceRegion {
-      "column": 9,
-      "endColumn": 10,
+      "column": 7,
+      "endColumn": 8,
       "endLine": 1,
       "extent": 1,
       "line": 1,
-      "offset": 8,
-      "source": "false ? 1 : 2",
+      "offset": 6,
+      "source": "false?1:2",
     },
     "type": "value",
     "value": {
@@ -1173,13 +2058,13 @@ exports[`parser > ternary operator 1`] = `
   },
   "right": {
     "location": SourceRegion {
-      "column": 13,
-      "endColumn": 14,
+      "column": 9,
+      "endColumn": 10,
       "endLine": 1,
       "extent": 1,
       "line": 1,
-      "offset": 12,
-      "source": "false ? 1 : 2",
+      "offset": 8,
+      "source": "false?1:2",
     },
     "type": "value",
     "value": {
@@ -1194,43 +2079,288 @@ exports[`parser > ternary operator 1`] = `
 }
 `;
 
-exports[`parser > unary operator 1`] = `
+exports[`valid expressions > parses true && false 1`] = `
 {
-  "expression": {
+  "left": {
     "location": SourceRegion {
-      "column": 2,
-      "endColumn": 3,
+      "column": 1,
+      "endColumn": 5,
       "endLine": 1,
-      "extent": 1,
+      "extent": 4,
       "line": 1,
-      "offset": 1,
-      "source": "-2",
+      "offset": 0,
+      "source": "true && false",
     },
     "type": "value",
     "value": {
       "type": "constant",
       "value": {
-        "type": "number",
-        "value": "2",
+        "type": "boolean",
+        "value": "true",
       },
     },
   },
   "location": SourceRegion {
     "column": 1,
-    "endColumn": 3,
+    "endColumn": 14,
     "endLine": 1,
-    "extent": 2,
+    "extent": 13,
     "line": 1,
     "offset": 0,
-    "source": "-2",
+    "source": "true && false",
   },
-  "operator": "negate",
-  "type": "unary",
+  "operator": "and",
+  "right": {
+    "location": SourceRegion {
+      "column": 9,
+      "endColumn": 14,
+      "endLine": 1,
+      "extent": 5,
+      "line": 1,
+      "offset": 8,
+      "source": "true && false",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "boolean",
+        "value": "false",
+      },
+    },
+  },
+  "type": "binary",
 }
 `;
 
-exports[`parser > value expression 1`] = `
+exports[`valid expressions > parses true || false 1`] = `
 {
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 5,
+      "endLine": 1,
+      "extent": 4,
+      "line": 1,
+      "offset": 0,
+      "source": "true || false",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "boolean",
+        "value": "true",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 14,
+    "endLine": 1,
+    "extent": 13,
+    "line": 1,
+    "offset": 0,
+    "source": "true || false",
+  },
+  "operator": "or",
+  "right": {
+    "location": SourceRegion {
+      "column": 9,
+      "endColumn": 14,
+      "endLine": 1,
+      "extent": 5,
+      "line": 1,
+      "offset": 8,
+      "source": "true || false",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "boolean",
+        "value": "false",
+      },
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses true and false 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 5,
+      "endLine": 1,
+      "extent": 4,
+      "line": 1,
+      "offset": 0,
+      "source": "true and false",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "boolean",
+        "value": "true",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 15,
+    "endLine": 1,
+    "extent": 14,
+    "line": 1,
+    "offset": 0,
+    "source": "true and false",
+  },
+  "operator": "and",
+  "right": {
+    "location": SourceRegion {
+      "column": 10,
+      "endColumn": 15,
+      "endLine": 1,
+      "extent": 5,
+      "line": 1,
+      "offset": 9,
+      "source": "true and false",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "boolean",
+        "value": "false",
+      },
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses true or false 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 5,
+      "endLine": 1,
+      "extent": 4,
+      "line": 1,
+      "offset": 0,
+      "source": "true or false",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "boolean",
+        "value": "true",
+      },
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 14,
+    "endLine": 1,
+    "extent": 13,
+    "line": 1,
+    "offset": 0,
+    "source": "true or false",
+  },
+  "operator": "or",
+  "right": {
+    "location": SourceRegion {
+      "column": 9,
+      "endColumn": 14,
+      "endLine": 1,
+      "extent": 5,
+      "line": 1,
+      "offset": 8,
+      "source": "true or false",
+    },
+    "type": "value",
+    "value": {
+      "type": "constant",
+      "value": {
+        "type": "boolean",
+        "value": "false",
+      },
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses x like y 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "x like y",
+    },
+    "type": "value",
+    "value": {
+      "name": "x",
+      "type": "parameter",
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 9,
+    "endLine": 1,
+    "extent": 8,
+    "line": 1,
+    "offset": 0,
+    "source": "x like y",
+  },
+  "operator": "like",
+  "right": {
+    "location": SourceRegion {
+      "column": 8,
+      "endColumn": 9,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 7,
+      "source": "x like y",
+    },
+    "type": "value",
+    "value": {
+      "name": "y",
+      "type": "parameter",
+    },
+  },
+  "type": "binary",
+}
+`;
+
+exports[`valid expressions > parses x not like y 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "x not like y",
+    },
+    "type": "value",
+    "value": {
+      "name": "x",
+      "type": "parameter",
+    },
+  },
   "location": SourceRegion {
     "column": 1,
     "endColumn": 13,
@@ -1238,15 +2368,25 @@ exports[`parser > value expression 1`] = `
     "extent": 12,
     "line": 1,
     "offset": 0,
-    "source": "#11/06/2000#",
+    "source": "x not like y",
   },
-  "type": "value",
-  "value": {
-    "type": "constant",
+  "operator": "not-like",
+  "right": {
+    "location": SourceRegion {
+      "column": 12,
+      "endColumn": 13,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 11,
+      "source": "x not like y",
+    },
+    "type": "value",
     "value": {
-      "type": "date",
-      "value": "11/06/2000",
+      "name": "y",
+      "type": "parameter",
     },
   },
+  "type": "binary",
 }
 `;
