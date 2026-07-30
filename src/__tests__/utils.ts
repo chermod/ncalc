@@ -1,5 +1,7 @@
 import type { LogicalExpression } from "../types/expression";
 
+/* v8 ignore start */
+
 export const stripLocations = (
   expression: LogicalExpression,
 ): LogicalExpression => {
@@ -70,3 +72,5 @@ export const getError = (action: () => unknown): unknown => {
     return error;
   }
 };
+
+/* v8 ignore stop */

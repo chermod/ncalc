@@ -49,6 +49,7 @@ describe("valid expressions", () => {
     "1 >> 2",
     "Fun()",
     "x like y",
+    "x not like y",
     "x not in y",
   ])("parses %s", (s) => {
     expect.assertions(1);
@@ -142,6 +143,64 @@ describe("source tracking", () => {
       offset: 3,
       extent: 1,
     });
+  });
+});
+
+describe("errors", () => {
+  it("raises an error for incomplete not operator", () => {
+    expect.assertions(2);
+
+    const parserError = getError(() => parse("1 not"));
+
+    expect.assert(parserError instanceof ParserError);
+
+    expect(parserError.errors).toHaveLength(1);
+
+    const error = parserError.errors[0];
+
+    expect(error.message).toBe("Expected in after not");
+  });
+
+  it("raises an error for incomplete ternary operator", () => {
+    expect.assertions(2);
+
+    const parserError = getError(() => parse("true ? 10"));
+
+    expect.assert(parserError instanceof ParserError);
+
+    expect(parserError.errors).toHaveLength(1);
+
+    const error = parserError.errors[0];
+
+    expect(error.message).toBe("Expected colon");
+  });
+
+  it("raises an error for incomplete groups", () => {
+    expect.assertions(2);
+
+    const parserError = getError(() => parse("(10"));
+
+    expect.assert(parserError instanceof ParserError);
+
+    expect(parserError.errors).toHaveLength(1);
+
+    const error = parserError.errors[0];
+
+    expect(error.message).toBe("Expected )");
+  });
+
+  it("raises an error for incomplete lists", () => {
+    expect.assertions(2);
+
+    const parserError = getError(() => parse("(1,2,3"));
+
+    expect.assert(parserError instanceof ParserError);
+
+    expect(parserError.errors).toHaveLength(1);
+
+    const error = parserError.errors[0];
+
+    expect(error.message).toBe("Expected )");
   });
 });
 

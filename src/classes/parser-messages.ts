@@ -9,7 +9,7 @@ export const PARSER_ERROR_MESSAGE_EXPECTED_COLON = "Expected colon";
 export const PARSER_ERROR_MESSAGE_EXPECTED_IN_AFTER_NOT =
   "Expected in after not";
 
-export const PARSER_ERROR_MESSAGE_EXPECTED_GROUP_CLOSE = "Expected group-close";
+export const PARSER_ERROR_MESSAGE_EXPECTED_GROUP_CLOSE = "Expected )";
 
 export const PARSER_ERROR_MESSAGE_EXPECTED_VALUE = "Expected value";
 

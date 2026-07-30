@@ -2343,6 +2343,54 @@ exports[`valid expressions > parses x like y 1`] = `
 }
 `;
 
+exports[`valid expressions > parses x not in y 1`] = `
+{
+  "left": {
+    "location": SourceRegion {
+      "column": 1,
+      "endColumn": 2,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 0,
+      "source": "x not in y",
+    },
+    "type": "value",
+    "value": {
+      "name": "x",
+      "type": "parameter",
+    },
+  },
+  "location": SourceRegion {
+    "column": 1,
+    "endColumn": 11,
+    "endLine": 1,
+    "extent": 10,
+    "line": 1,
+    "offset": 0,
+    "source": "x not in y",
+  },
+  "operator": "not-in",
+  "right": {
+    "location": SourceRegion {
+      "column": 10,
+      "endColumn": 11,
+      "endLine": 1,
+      "extent": 1,
+      "line": 1,
+      "offset": 9,
+      "source": "x not in y",
+    },
+    "type": "value",
+    "value": {
+      "name": "y",
+      "type": "parameter",
+    },
+  },
+  "type": "binary",
+}
+`;
+
 exports[`valid expressions > parses x not like y 1`] = `
 {
   "left": {
