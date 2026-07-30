@@ -67,6 +67,22 @@ export class SourceRegion {
   get #endOffset(): number {
     return this.offset + this.extent;
   }
+
+  static encloseAll(
+    ...locations: (SourceRegion | null)[]
+  ): SourceRegion | null {
+    return locations.reduce<SourceRegion | null>((enclosedLocation, location) => {
+      if (location === null) {
+        return enclosedLocation;
+      }
+
+      if (enclosedLocation === null) {
+        return location
+      }
+
+      return enclosedLocation.enclose(location);
+    }, null);
+  }
 }
 
 const SOURCE_REGION_ERROR_MESSAGE_DIFFERENT_SOURCES =
